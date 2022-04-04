@@ -1,115 +1,113 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
+import 'package:flame/game.dart';
+import 'package:flame/input.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'car.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(GameWidget(game: PadRacingGame()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
+  {
+    LogicalKeyboardKey.arrowUp: LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.arrowDown: LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.arrowLeft: LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.arrowRight: LogicalKeyboardKey.arrowRight,
+  },
+  {
+    LogicalKeyboardKey.keyW: LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.keyS: LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.keyA: LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.keyD: LogicalKeyboardKey.arrowRight,
+  },
+];
 
-  // This widget is the root of your application.
+class PadRacingGame extends Forge2DGame with KeyboardEvents {
+  PadRacingGame() : super(gravity: Vector2.zero());
+
+  int numberOfPlayers = 2;
+  late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
+  late final List<Set<LogicalKeyboardKey>> pressedKeys;
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+  Future<void> onLoad() async {
+    pressedKeys = List.generate(numberOfPlayers, (_) => {});
+    activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
+    final worldCenter = screenToWorld(size * camera.zoom / 2);
+    final blobCenter = worldCenter + Vector2(0, -30);
+    final blobRadius = Vector2.all(6.0);
+    final jointDef = ConstantVolumeJointDef()
+      ..frequencyHz = 20.0
+      ..dampingRatio = 1.0
+      ..collideConnected = false;
+
+    await addAll(
+      List.generate(20, (i) => BlobPart(i, jointDef, blobRadius, blobCenter)),
     );
+    for (var i = 0; i < numberOfPlayers; i++) {
+      add(Car(playerNumber: i));
+    }
+    world.createJoint(ConstantVolumeJoint(world, jointDef));
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  KeyEventResult onKeyEvent(
+    RawKeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    super.onKeyEvent(event, keysPressed);
+    // TODO: Add support for second player
+    pressedKeys.forEach((e) => e.clear());
+    keysPressed.forEach((LogicalKeyboardKey key) {
+      activeKeyMaps.forEachIndexed((i, keyMap) {
+        if (keyMap.containsKey(key)) {
+          pressedKeys[i].add(keyMap[key]!);
+        }
+      });
     });
+
+    return KeyEventResult.handled;
   }
+}
+
+class BlobPart extends BodyComponent {
+  final ConstantVolumeJointDef jointDef;
+  final int bodyNumber;
+  final Vector2 blobRadius;
+  final Vector2 blobCenter;
+
+  BlobPart(
+    this.bodyNumber,
+    this.jointDef,
+    this.blobRadius,
+    this.blobCenter,
+  );
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+  Body createBody() {
+    const nBodies = 20.0;
+    const bodyRadius = 0.5;
+    final angle = (bodyNumber / nBodies) * pi * 2;
+    final rng = Random();
+    final x = blobCenter.x + blobRadius.x * sin(angle) + rng.nextDouble();
+    final y = blobCenter.y + blobRadius.y * cos(angle) + rng.nextDouble();
+
+    final bodyDef = BodyDef()
+      ..fixedRotation = true
+      ..position.setValues(x, y)
+      ..type = BodyType.dynamic;
+    final body = world.createBody(bodyDef);
+
+    final shape = CircleShape()..radius = bodyRadius;
+    final fixtureDef = FixtureDef(shape)..density = 1.0;
+    body.createFixture(fixtureDef);
+    jointDef.addBody(body);
+    return body;
   }
 }

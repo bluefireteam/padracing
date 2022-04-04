@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
   fake_async:
     dependency: transitive
     description:
@@ -57,30 +50,46 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  flame:
+    dependency: "direct main"
+    description:
+      name: flame
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
+  flame_forge2d:
+    dependency: "direct main"
+    description:
+      path: "packages/flame_forge2d"
+      ref: "spydon.properly-flip-y-axis"
+      resolved-ref: "4b04a992855bee08b4940255aac76cc5b3a28c86"
+      url: "https://github.com/flame-engine/flame.git"
+    source: git
+    version: "0.10.0"
+  flame_lint:
+    dependency: "direct dev"
+    description:
+      name: flame_lint
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_lints:
-    dependency: "direct dev"
-    description:
-      name: flutter_lints
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
-  lints:
+  forge2d:
     dependency: transitive
     description:
-      name: lints
+      name: forge2d
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "0.10.0"
   matcher:
     dependency: transitive
     description:
@@ -102,6 +111,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  ordered_set:
+    dependency: transitive
+    description:
+      name: ordered_set
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   path:
     dependency: transitive
     description:
@@ -172,3 +188,4 @@ packages:
     version: "2.1.1"
 sdks:
   dart: ">=2.16.2 <3.0.0"
+  flutter: ">=2.5.0"
