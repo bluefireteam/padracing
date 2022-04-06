@@ -7,6 +7,9 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'background.dart';
+import 'ball.dart';
+import 'boundaries.dart';
 import 'car.dart';
 
 void main() {
@@ -47,6 +50,9 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
       ..dampingRatio = 1.0
       ..collideConnected = false;
 
+    add(Background());
+    addAll(createBoundaries(this));
+    add(Ball());
     await addAll(
       List.generate(20, (i) => BlobPart(i, jointDef, blobRadius, blobCenter)),
     );
@@ -94,9 +100,8 @@ class BlobPart extends BodyComponent {
     const nBodies = 20.0;
     const bodyRadius = 0.5;
     final angle = (bodyNumber / nBodies) * pi * 2;
-    final rng = Random();
-    final x = blobCenter.x + blobRadius.x * sin(angle) + rng.nextDouble();
-    final y = blobCenter.y + blobRadius.y * cos(angle) + rng.nextDouble();
+    final x = blobCenter.x + blobRadius.x * sin(angle);
+    final y = blobCenter.y + blobRadius.y * cos(angle);
 
     final bodyDef = BodyDef()
       ..fixedRotation = true

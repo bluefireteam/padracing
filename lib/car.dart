@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/body_component.dart';
 import 'package:forge2d/forge2d.dart';
 
@@ -16,6 +17,7 @@ class Car extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
+    paint..color = ColorExtension.random();
     final startPosition =
         gameRef.camera.gameSize + Vector2.all(100) * playerNumber.toDouble();
     final def = BodyDef()
@@ -37,8 +39,10 @@ class Car extends BodyComponent<PadRacingGame> {
     ];
 
     final shape = PolygonShape()..set(vertices);
-
-    body.createFixtureFromShape(shape, 0.1);
+    final fixtureDef = FixtureDef(shape)
+      ..density = 0.2
+      ..restitution = 2.0;
+    body.createFixture(fixtureDef);
 
     final jointDef = RevoluteJointDef();
     jointDef.bodyA = body;

@@ -1,8 +1,12 @@
 import 'dart:math';
+import 'dart:ui';
 
+import 'package:flame/components.dart';
+import 'package:flame/particles.dart';
 import 'package:flame_forge2d/body_component.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forge2d/forge2d.dart';
+import 'package:forge2d/forge2d.dart' hide Particle;
 
 import 'ground_area.dart';
 import 'main.dart';
@@ -15,7 +19,7 @@ class Tire extends BodyComponent<PadRacingGame> {
     this.jointDef,
     this.jointAnchor, {
     this.isTurnableTire = false,
-  });
+  }) : super(paint: Paint()..color = Colors.grey.shade700);
 
   final Set<LogicalKeyboardKey> pressedKeys;
   final double _maxDriveForce;
@@ -33,6 +37,13 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   final double _lockAngle = 0.6;
   final double _turnSpeedPerSecond = 4;
+
+  final random = Random();
+  final Tween<double> noise = Tween(begin: -1, end: 1);
+  final ColorTween colorTween = ColorTween(
+    begin: Colors.brown,
+    end: Colors.black,
+  );
 
   @override
   Body createBody() {
@@ -60,6 +71,32 @@ class Tire extends BodyComponent<PadRacingGame> {
       _updateTurn(dt);
       _updateFriction();
       _updateDrive();
+      if (!isTurnableTire && pressedKeys.isNotEmpty) {
+        gameRef.add(
+          ParticleSystemComponent(
+            position: body.position,
+            particle: Particle.generate(
+              count: 5,
+              generator: (i) {
+                return AcceleratedParticle(
+                  lifespan: 2,
+                  speed: Vector2(
+                        noise.transform(random.nextDouble()),
+                        noise.transform(random.nextDouble()),
+                      ) *
+                      i.toDouble(),
+                  child: CircleParticle(
+                    radius: 0.3,
+                    paint: Paint()
+                      ..color = colorTween.transform(random.nextDouble())!,
+                  ),
+                );
+              },
+            ),
+            priority: -1,
+          ),
+        );
+      }
     }
   }
 
