@@ -1,13 +1,11 @@
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:flame_forge2d/body_component.dart';
-import 'package:forge2d/forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 
 import 'main.dart';
 import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
-  Car({required this.playerNumber}) : super();
+  Car({required this.playerNumber}) : super(priority: 2);
 
   final int playerNumber;
   final double _backTireMaxDriveForce = 300.0;
@@ -19,7 +17,7 @@ class Car extends BodyComponent<PadRacingGame> {
   Body createBody() {
     paint..color = ColorExtension.random();
     final startPosition =
-        gameRef.camera.gameSize + Vector2.all(100) * playerNumber.toDouble();
+        Vector2.all(50) + Vector2.all(50) * playerNumber.toDouble();
     final def = BodyDef()
       ..type = BodyType.dynamic
       ..position = startPosition;
@@ -68,5 +66,11 @@ class Car extends BodyComponent<PadRacingGame> {
 
     gameRef.addAll(tires);
     return body;
+  }
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    gameRef.camera.followBodyComponent(this);
   }
 }

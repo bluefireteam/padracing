@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -11,6 +9,7 @@ import 'background.dart';
 import 'ball.dart';
 import 'boundaries.dart';
 import 'car.dart';
+import 'house.dart';
 
 void main() {
   runApp(GameWidget(game: PadRacingGame()));
@@ -34,6 +33,7 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
 class PadRacingGame extends Forge2DGame with KeyboardEvents {
   PadRacingGame() : super(gravity: Vector2.zero());
 
+  final Vector2 trackSize = Vector2.all(400);
   int numberOfPlayers = 2;
   late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
   late final List<Set<LogicalKeyboardKey>> pressedKeys;
@@ -42,24 +42,13 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
   Future<void> onLoad() async {
     pressedKeys = List.generate(numberOfPlayers, (_) => {});
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
-    final worldCenter = screenToWorld(size * camera.zoom / 2);
-    final blobCenter = worldCenter + Vector2(0, -30);
-    final blobRadius = Vector2.all(6.0);
-    final jointDef = ConstantVolumeJointDef()
-      ..frequencyHz = 20.0
-      ..dampingRatio = 1.0
-      ..collideConnected = false;
-
     add(Background());
-    addAll(createBoundaries(this));
+    addAll(createBoundaries(trackSize));
     add(Ball());
-    await addAll(
-      List.generate(20, (i) => BlobPart(i, jointDef, blobRadius, blobCenter)),
-    );
+    add(House(Vector2.all(150), Vector2(5, 15)));
     for (var i = 0; i < numberOfPlayers; i++) {
       add(Car(playerNumber: i));
     }
-    world.createJoint(ConstantVolumeJoint(world, jointDef));
   }
 
   @override
@@ -68,7 +57,6 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     Set<LogicalKeyboardKey> keysPressed,
   ) {
     super.onKeyEvent(event, keysPressed);
-    // TODO: Add support for second player
     pressedKeys.forEach((e) => e.clear());
     keysPressed.forEach((LogicalKeyboardKey key) {
       activeKeyMaps.forEachIndexed((i, keyMap) {
@@ -79,40 +67,5 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     });
 
     return KeyEventResult.handled;
-  }
-}
-
-class BlobPart extends BodyComponent {
-  final ConstantVolumeJointDef jointDef;
-  final int bodyNumber;
-  final Vector2 blobRadius;
-  final Vector2 blobCenter;
-
-  BlobPart(
-    this.bodyNumber,
-    this.jointDef,
-    this.blobRadius,
-    this.blobCenter,
-  );
-
-  @override
-  Body createBody() {
-    const nBodies = 20.0;
-    const bodyRadius = 0.5;
-    final angle = (bodyNumber / nBodies) * pi * 2;
-    final x = blobCenter.x + blobRadius.x * sin(angle);
-    final y = blobCenter.y + blobRadius.y * cos(angle);
-
-    final bodyDef = BodyDef()
-      ..fixedRotation = true
-      ..position.setValues(x, y)
-      ..type = BodyType.dynamic;
-    final body = world.createBody(bodyDef);
-
-    final shape = CircleShape()..radius = bodyRadius;
-    final fixtureDef = FixtureDef(shape)..density = 1.0;
-    body.createFixture(fixtureDef);
-    jointDef.addBody(body);
-    return body;
   }
 }

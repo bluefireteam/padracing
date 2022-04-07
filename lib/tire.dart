@@ -19,7 +19,7 @@ class Tire extends BodyComponent<PadRacingGame> {
     this.jointDef,
     this.jointAnchor, {
     this.isTurnableTire = false,
-  }) : super(paint: Paint()..color = Colors.grey.shade700);
+  }) : super(paint: Paint()..color = Colors.grey.shade700, priority: 2);
 
   final Set<LogicalKeyboardKey> pressedKeys;
   final double _maxDriveForce;
@@ -71,12 +71,12 @@ class Tire extends BodyComponent<PadRacingGame> {
       _updateTurn(dt);
       _updateFriction();
       _updateDrive();
-      if (!isTurnableTire && pressedKeys.isNotEmpty) {
+      if (body.linearVelocity.length2 > 100) {
         gameRef.add(
           ParticleSystemComponent(
             position: body.position,
             particle: Particle.generate(
-              count: 5,
+              count: 8,
               generator: (i) {
                 return AcceleratedParticle(
                   lifespan: 2,
@@ -86,14 +86,14 @@ class Tire extends BodyComponent<PadRacingGame> {
                       ) *
                       i.toDouble(),
                   child: CircleParticle(
-                    radius: 0.3,
+                    radius: 0.2,
                     paint: Paint()
                       ..color = colorTween.transform(random.nextDouble())!,
                   ),
                 );
               },
             ),
-            priority: -1,
+            priority: 1,
           ),
         );
       }

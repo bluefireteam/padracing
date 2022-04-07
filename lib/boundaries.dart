@@ -1,8 +1,9 @@
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flutter/material.dart';
 
-List<Wall> createBoundaries(Forge2DGame game) {
+List<Wall> createBoundaries(Vector2 size) {
   final topLeft = Vector2.zero();
-  final bottomRight = game.screenToWorld(game.camera.viewport.effectiveSize);
+  final bottomRight = size;
   final topRight = Vector2(bottomRight.x, topLeft.y);
   final bottomLeft = Vector2(topLeft.x, bottomRight.y);
 
@@ -23,6 +24,7 @@ class Wall extends BodyComponent {
   @override
   Body createBody() {
     final shape = EdgeShape()..set(start, end);
+    paint.color = Colors.black;
 
     final fixtureDef = FixtureDef(shape)
       ..restitution = 0.5
