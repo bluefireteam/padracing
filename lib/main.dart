@@ -7,9 +7,8 @@ import 'package:flutter/services.dart';
 
 import 'background.dart';
 import 'ball.dart';
-import 'boundaries.dart';
 import 'car.dart';
-import 'house.dart';
+import 'wall.dart';
 
 void main() {
   runApp(GameWidget(game: PadRacingGame()));
@@ -43,18 +42,8 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     pressedKeys = List.generate(numberOfPlayers, (_) => {});
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
     add(Background());
-    addAll(createBoundaries(trackSize));
+    addAll(createWalls(trackSize));
     add(Ball());
-    add(House(Vector2(52.5, 240), Vector2(5, 380)));
-    add(House(Vector2(200, 50), Vector2(300, 5)));
-    add(House(Vector2(72.5, 300), Vector2(5, 400)));
-    add(House(Vector2(180, 100), Vector2(220, 5)));
-    add(House(Vector2(350, 105), Vector2(5, 115)));
-    add(House(Vector2(350, 312.5), Vector2(5, 180)));
-    add(House(Vector2(310, 160), Vector2(240, 5)));
-    add(House(Vector2(210, 400), Vector2(280, 5)));
-    add(House(Vector2(430, 302.5), Vector2(5, 290)));
-    add(House(Vector2(292.5, 450), Vector2(280, 5)));
     for (var i = 0; i < numberOfPlayers; i++) {
       add(Car(playerNumber: i));
     }

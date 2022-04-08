@@ -10,8 +10,33 @@ import 'package:forge2d/src/dynamics/body.dart';
 
 import 'main.dart';
 
-class House extends BodyComponent<PadRacingGame> {
-  House(this.position, this.size) : super(priority: 3);
+List<Wall> createWalls(Vector2 size) {
+  final topCenter = Vector2(size.x / 2, 0);
+  final bottomCenter = Vector2(size.x / 2, size.y);
+  final leftCenter = Vector2(0, size.y / 2);
+  final rightCenter = Vector2(size.x, size.y / 2);
+
+  final filledSize = size.clone() + Vector2.all(5);
+  return [
+    Wall(topCenter, Vector2(filledSize.x, 5)),
+    Wall(bottomCenter, Vector2(filledSize.y, 5)),
+    Wall(leftCenter, Vector2(5, filledSize.y)),
+    Wall(rightCenter, Vector2(5, filledSize.y)),
+    Wall(Vector2(52.5, 240), Vector2(5, 380)),
+    Wall(Vector2(200, 50), Vector2(300, 5)),
+    Wall(Vector2(72.5, 300), Vector2(5, 400)),
+    Wall(Vector2(180, 100), Vector2(220, 5)),
+    Wall(Vector2(350, 105), Vector2(5, 115)),
+    Wall(Vector2(350, 312.5), Vector2(5, 180)),
+    Wall(Vector2(310, 160), Vector2(240, 5)),
+    Wall(Vector2(210, 400), Vector2(280, 5)),
+    Wall(Vector2(430, 302.5), Vector2(5, 290)),
+    Wall(Vector2(292.5, 450), Vector2(280, 5)),
+  ];
+}
+
+class Wall extends BodyComponent<PadRacingGame> {
+  Wall(this.position, this.size) : super(priority: 3);
 
   final Vector2 position;
   final Vector2 size;
