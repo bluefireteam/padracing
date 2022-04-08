@@ -30,7 +30,7 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
 ];
 
 class PadRacingGame extends Forge2DGame with KeyboardEvents {
-  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 10);
+  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
 
   final Vector2 trackSize = Vector2.all(500);
   int numberOfPlayers = 2;
