@@ -30,7 +30,7 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
 ];
 
 class PadRacingGame extends Forge2DGame with KeyboardEvents {
-  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
+  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 10);
 
   final Vector2 trackSize = Vector2.all(500);
   int numberOfPlayers = 2;
@@ -43,10 +43,10 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
     add(Background());
     addAll(createWalls(trackSize));
-    add(Ball());
     for (var i = 0; i < numberOfPlayers; i++) {
       add(Car(playerNumber: i));
     }
+    add(Ball());
   }
 
   @override
