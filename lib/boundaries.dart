@@ -1,40 +1,18 @@
 import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flutter/material.dart';
 
-List<Wall> createBoundaries(Vector2 size) {
-  final topLeft = Vector2.zero();
-  final bottomRight = size;
-  final topRight = Vector2(bottomRight.x, topLeft.y);
-  final bottomLeft = Vector2(topLeft.x, bottomRight.y);
+import 'house.dart';
 
+List<House> createBoundaries(Vector2 size) {
+  final topCenter = Vector2(size.x / 2, 0);
+  final bottomCenter = Vector2(size.x / 2, size.y);
+  final leftCenter = Vector2(0, size.y / 2);
+  final rightCenter = Vector2(size.x, size.y / 2);
+
+  final filledSize = size.clone() + Vector2.all(5);
   return [
-    Wall(topLeft, topRight),
-    Wall(topRight, bottomRight),
-    Wall(bottomRight, bottomLeft),
-    Wall(bottomLeft, topLeft),
+    House(topCenter, Vector2(filledSize.x, 5)),
+    House(bottomCenter, Vector2(filledSize.y, 5)),
+    House(leftCenter, Vector2(5, filledSize.y)),
+    House(rightCenter, Vector2(5, filledSize.y)),
   ];
-}
-
-class Wall extends BodyComponent {
-  final Vector2 start;
-  final Vector2 end;
-
-  Wall(this.start, this.end);
-
-  @override
-  Body createBody() {
-    final shape = EdgeShape()..set(start, end);
-    paint.color = Colors.black;
-
-    final fixtureDef = FixtureDef(shape)
-      ..restitution = 0.5
-      ..friction = 0.3;
-
-    final bodyDef = BodyDef()
-      ..userData = this // To be able to determine object in collision
-      ..position = Vector2.zero()
-      ..type = BodyType.static;
-
-    return world.createBody(bodyDef)..createFixture(fixtureDef);
-  }
 }

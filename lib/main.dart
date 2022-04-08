@@ -31,9 +31,9 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
 ];
 
 class PadRacingGame extends Forge2DGame with KeyboardEvents {
-  PadRacingGame() : super(gravity: Vector2.zero());
+  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 10);
 
-  final Vector2 trackSize = Vector2.all(400);
+  final Vector2 trackSize = Vector2.all(500);
   int numberOfPlayers = 2;
   late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
   late final List<Set<LogicalKeyboardKey>> pressedKeys;
@@ -45,7 +45,16 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     add(Background());
     addAll(createBoundaries(trackSize));
     add(Ball());
-    add(House(Vector2.all(150), Vector2(5, 15)));
+    add(House(Vector2(52.5, 240), Vector2(5, 380)));
+    add(House(Vector2(200, 50), Vector2(300, 5)));
+    add(House(Vector2(72.5, 300), Vector2(5, 400)));
+    add(House(Vector2(180, 100), Vector2(220, 5)));
+    add(House(Vector2(350, 105), Vector2(5, 115)));
+    add(House(Vector2(350, 312.5), Vector2(5, 180)));
+    add(House(Vector2(310, 160), Vector2(240, 5)));
+    add(House(Vector2(210, 400), Vector2(280, 5)));
+    add(House(Vector2(430, 302.5), Vector2(5, 290)));
+    add(House(Vector2(292.5, 450), Vector2(280, 5)));
     for (var i = 0; i < numberOfPlayers; i++) {
       add(Car(playerNumber: i));
     }

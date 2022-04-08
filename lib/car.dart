@@ -17,7 +17,7 @@ class Car extends BodyComponent<PadRacingGame> {
   Body createBody() {
     paint..color = ColorExtension.random();
     final startPosition =
-        Vector2.all(50) + Vector2.all(50) * playerNumber.toDouble();
+        Vector2.all(20) + Vector2.all(20) * playerNumber.toDouble();
     final def = BodyDef()
       ..type = BodyType.dynamic
       ..position = startPosition;
