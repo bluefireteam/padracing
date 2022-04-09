@@ -41,7 +41,7 @@ class Ball extends BodyComponent<PadRacingGame> {
     }
     final picture = recorder.endRecording();
     _image = await picture.toImage((radius * 2).toInt(), (radius * 2).toInt());
-    gameRef.camera.followBodyComponent(this);
+    //gameRef.camera.followBodyComponent(this);
   }
 
   @override

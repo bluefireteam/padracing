@@ -24,7 +24,7 @@ class Tire extends BodyComponent<PadRacingGame> {
   final Set<LogicalKeyboardKey> pressedKeys;
   final double _maxDriveForce;
   final double _maxLateralImpulse;
-  double _currentTraction = 0.0;
+  double _currentTraction = 1.0;
   final Set<GroundArea> _groundAreas = <GroundArea>{};
 
   final double _maxForwardSpeed = 250.0;
@@ -54,8 +54,6 @@ class Tire extends BodyComponent<PadRacingGame> {
     polygonShape.setAsBoxXY(0.5, 1.25);
     final fixture = body.createFixtureFromShape(polygonShape, 1.0);
     fixture.userData = this;
-
-    _currentTraction = 1.0;
 
     jointDef.bodyB = body;
     jointDef.localAnchorA.setFrom(jointAnchor);
@@ -101,13 +99,12 @@ class Tire extends BodyComponent<PadRacingGame> {
   }
 
   void _updateFriction() {
-    final impulse = _lateralVelocity..scale(-body.mass);
-    if (impulse.length > _maxLateralImpulse) {
-      impulse.scale(_maxLateralImpulse / impulse.length);
-    }
+    final impulse = _lateralVelocity
+      ..scale(-body.mass)
+      ..clampScalar(-_maxLateralImpulse, _maxLateralImpulse);
     body.applyLinearImpulse(impulse..scale(_currentTraction));
     body.applyAngularImpulse(
-      0.1 * _currentTraction * body.getInertia() * (-body.angularVelocity),
+      0.1 * _currentTraction * body.getInertia() * -body.angularVelocity,
     );
 
     final currentForwardNormal = _forwardVelocity;
