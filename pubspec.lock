@@ -53,9 +53,11 @@ packages:
   flame:
     dependency: "direct main"
     description:
-      name: flame
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "packages/flame"
+      ref: main
+      resolved-ref: "11bf75d074fe9c0d3e043ce43611a1bb1824dd40"
+      url: "https://github.com/flame-engine/flame.git"
+    source: git
     version: "1.1.0"
   flame_forge2d:
     dependency: "direct main"

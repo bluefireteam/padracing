@@ -17,7 +17,7 @@ class Ball extends BodyComponent<PadRacingGame> {
   Future<void> onLoad() async {
     await super.onLoad();
     renderBody = false;
-    final trackSize = gameRef.trackSize;
+    final trackSize = PadRacingGame.trackSize;
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, trackSize.toRect());
     final colors = [

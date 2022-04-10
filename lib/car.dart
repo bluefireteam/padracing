@@ -1,3 +1,4 @@
+import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
@@ -5,9 +6,11 @@ import 'main.dart';
 import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
-  Car({required this.playerNumber}) : super(priority: 2);
+  Car({required this.playerNumber, required this.cameraComponent})
+      : super(priority: 2);
 
   final int playerNumber;
+  final CameraComponent cameraComponent;
   final double _backTireMaxDriveForce = 300.0;
   final double _frontTireMaxDriveForce = 500.0;
   final double _backTireMaxLateralImpulse = 8.5;
@@ -71,6 +74,10 @@ class Car extends BodyComponent<PadRacingGame> {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    gameRef.camera.followBodyComponent(this);
+  }
+
+  @override
+  void update(double dt) {
+    cameraComponent.viewfinder..position = body.position;
   }
 }

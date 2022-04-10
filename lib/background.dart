@@ -16,7 +16,7 @@ class Background extends PositionComponent
 
   @override
   Future<void> onLoad() async {
-    final trackSize = gameRef.trackSize;
+    final trackSize = PadRacingGame.trackSize;
     paint..color = Colors.green;
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, trackSize.toRect());
