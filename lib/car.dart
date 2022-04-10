@@ -67,13 +67,8 @@ class Car extends BodyComponent<PadRacingGame> {
       );
     });
 
-    gameRef.addAll(tires);
+    gameRef.cameraWorld.addAll(tires);
     return body;
-  }
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
   }
 
   @override

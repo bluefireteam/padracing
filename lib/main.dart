@@ -13,7 +13,7 @@ import 'car.dart';
 import 'wall.dart';
 
 void main() {
-  runApp(GameWidget(game: WrapperGame()));
+  runApp(GameWidget(game: PadRacingGame()));
 }
 
 final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
@@ -31,24 +31,30 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
   },
 ];
 
-class WrapperGame extends FlameGame with KeyboardEvents {
-  late final PadRacingGame game;
+class PadRacingGame extends Forge2DGame with KeyboardEvents {
+  PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
+
+  static const numberOfPlayers = 2;
+  static Vector2 trackSize = Vector2.all(500);
+  late final World cameraWorld;
+  late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
+  late final List<Set<LogicalKeyboardKey>> pressedKeys;
 
   @override
   Future<void> onLoad() async {
     const numberOfPlayers = PadRacingGame.numberOfPlayers;
-    final world = World();
-    await add(world);
+    cameraWorld = World();
+    await add(cameraWorld);
     final viewportSize = Vector2(canvasSize.x / numberOfPlayers, canvasSize.y);
     RectangleComponent viewportRimGenerator() =>
         RectangleComponent(size: viewportSize, anchor: Anchor.center)
-          ..paint.color = Colors.red
+          ..paint.color = Colors.blue
           ..paint.strokeWidth = 2.0
           ..paint.style = PaintingStyle.stroke;
     final cameras = List.generate(
       numberOfPlayers,
       (i) => CameraComponent(
-        world: world,
+        world: cameraWorld,
         viewport: FixedSizeViewport(viewportSize.x, viewportSize.y)
           ..position = Vector2(
             (canvasSize.x / numberOfPlayers) * (i + 0.5),
@@ -57,11 +63,19 @@ class WrapperGame extends FlameGame with KeyboardEvents {
           ..add(viewportRimGenerator()),
       )
         ..viewfinder.anchor = Anchor.center
-        //..viewfinder.visibleGameSize = PadRacingGame.trackSize
         ..viewfinder.zoom = 10,
     );
     await addAll(cameras);
-    world.add(game = PadRacingGame(cameras));
+    cameraWorld.add(Background());
+    //add(Background());
+    cameraWorld.addAll(createWalls(trackSize));
+    for (var i = 0; i < numberOfPlayers; i++) {
+      cameraWorld.add(Car(playerNumber: i, cameraComponent: cameras[i]));
+    }
+    cameraWorld.add(Ball());
+
+    pressedKeys = List.generate(numberOfPlayers, (_) => {});
+    activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
   }
 
   @override
@@ -70,40 +84,18 @@ class WrapperGame extends FlameGame with KeyboardEvents {
     Set<LogicalKeyboardKey> keysPressed,
   ) {
     super.onKeyEvent(event, keysPressed);
-    if (!game.isLoaded) {
+    if (!isLoaded) {
       return KeyEventResult.ignored;
     }
 
-    game.pressedKeys.forEach((e) => e.clear());
+    pressedKeys.forEach((e) => e.clear());
     keysPressed.forEach((LogicalKeyboardKey key) {
-      game.activeKeyMaps.forEachIndexed((i, keyMap) {
+      activeKeyMaps.forEachIndexed((i, keyMap) {
         if (keyMap.containsKey(key)) {
-          game.pressedKeys[i].add(keyMap[key]!);
+          pressedKeys[i].add(keyMap[key]!);
         }
       });
     });
     return KeyEventResult.handled;
-  }
-}
-
-class PadRacingGame extends Forge2DGame with KeyboardEvents {
-  PadRacingGame(this.cameras) : super(gravity: Vector2.zero(), zoom: 1);
-
-  static const numberOfPlayers = 2;
-  static Vector2 trackSize = Vector2.all(500);
-  final List<CameraComponent> cameras;
-  late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
-  late final List<Set<LogicalKeyboardKey>> pressedKeys;
-
-  @override
-  Future<void> onLoad() async {
-    pressedKeys = List.generate(numberOfPlayers, (_) => {});
-    activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
-    add(Background());
-    addAll(createWalls(trackSize));
-    for (var i = 0; i < numberOfPlayers; i++) {
-      add(Car(playerNumber: i, cameraComponent: cameras[i]));
-    }
-    add(Ball());
   }
 }

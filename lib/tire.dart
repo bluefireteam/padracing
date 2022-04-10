@@ -70,7 +70,7 @@ class Tire extends BodyComponent<PadRacingGame> {
       _updateFriction();
       _updateDrive();
       if (body.linearVelocity.length2 > 100) {
-        gameRef.add(
+        gameRef.cameraWorld.add(
           ParticleSystemComponent(
             position: body.position,
             particle: Particle.generate(
