@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'background.dart';
 import 'ball.dart';
 import 'car.dart';
+import 'ground_sensor.dart';
 import 'wall.dart';
 
 void main() {
@@ -34,6 +35,9 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
 class PadRacingGame extends Forge2DGame with KeyboardEvents {
   PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
 
+  @override
+  Color backgroundColor() => Colors.grey.shade900;
+
   static const numberOfPlayers = 2;
   static Vector2 trackSize = Vector2.all(500);
   late final World cameraWorld;
@@ -42,6 +46,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
 
   @override
   Future<void> onLoad() async {
+    children.query();
     const numberOfPlayers = PadRacingGame.numberOfPlayers;
     cameraWorld = World();
     await add(cameraWorld);
@@ -67,7 +72,9 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     );
     await addAll(cameras);
     cameraWorld.add(Background());
-    //add(Background());
+    cameraWorld.add(GroundSensor(Vector2(25, 50), Vector2(50, 5), true));
+    cameraWorld.add(GroundSensor(Vector2(25, 70), Vector2(50, 5), true));
+    cameraWorld.add(GroundSensor(Vector2(52.5, 25), Vector2(5, 50), false));
     cameraWorld.addAll(createWalls(trackSize));
     for (var i = 0; i < numberOfPlayers; i++) {
       cameraWorld.add(Car(playerNumber: i, cameraComponent: cameras[i]));
@@ -76,6 +83,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
 
     pressedKeys = List.generate(numberOfPlayers, (_) => {});
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
+    addContactCallback(CarContactCallback());
   }
 
   @override

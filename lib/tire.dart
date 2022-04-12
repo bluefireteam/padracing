@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forge2d/forge2d.dart' hide Particle;
 
-import 'ground_area.dart';
 import 'main.dart';
 
 class Tire extends BodyComponent<PadRacingGame> {
@@ -25,7 +24,6 @@ class Tire extends BodyComponent<PadRacingGame> {
   final double _maxDriveForce;
   final double _maxLateralImpulse;
   double _currentTraction = 1.0;
-  final Set<GroundArea> _groundAreas = <GroundArea>{};
 
   final double _maxForwardSpeed = 250.0;
   final double _maxBackwardSpeed = -40.0;
@@ -165,30 +163,6 @@ class Tire extends BodyComponent<PadRacingGame> {
       joint.setLimits(0, 0);
     }
     body.applyTorque(desiredTorque);
-  }
-
-  void _updateTraction() {
-    if (_groundAreas.isEmpty) {
-      _currentTraction = 1.0;
-    } else {
-      _currentTraction = 0.0;
-      _groundAreas.forEach((element) {
-        _currentTraction = max(_currentTraction, element.frictionModifier);
-      });
-    }
-  }
-
-  void addGroundArea(GroundArea groundArea) {
-    final newlyAdded = _groundAreas.add(groundArea);
-    if (newlyAdded) {
-      _updateTraction();
-    }
-  }
-
-  void removeGroundArea(GroundArea ga) {
-    if (_groundAreas.remove(ga)) {
-      _updateTraction();
-    }
   }
 
   // Cached Vectors to reduce unnecessary object creation.

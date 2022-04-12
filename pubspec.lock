@@ -53,21 +53,17 @@ packages:
   flame:
     dependency: "direct main"
     description:
-      path: "packages/flame"
-      ref: main
-      resolved-ref: "11bf75d074fe9c0d3e043ce43611a1bb1824dd40"
-      url: "https://github.com/flame-engine/flame.git"
-    source: git
-    version: "1.1.0"
+      name: flame
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   flame_forge2d:
     dependency: "direct main"
     description:
-      path: "packages/flame_forge2d"
-      ref: "spydon.properly-flip-y-axis"
-      resolved-ref: "4b04a992855bee08b4940255aac76cc5b3a28c86"
-      url: "https://github.com/flame-engine/flame.git"
-    source: git
-    version: "0.10.0"
+      name: flame_forge2d
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.0"
   flame_lint:
     dependency: "direct dev"
     description:
@@ -91,7 +87,7 @@ packages:
       name: forge2d
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.0"
+    version: "0.11.0"
   matcher:
     dependency: transitive
     description:

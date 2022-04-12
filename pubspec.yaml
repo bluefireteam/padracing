@@ -9,23 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flame:
-    git:
-      url: https://github.com/flame-engine/flame.git
-      ref: main
-      path: packages/flame
-  flame_forge2d:
-    git:
-      url: https://github.com/flame-engine/flame.git
-      ref: spydon.properly-flip-y-axis
-      path: packages/flame_forge2d
-
-dependency_overrides:
-  flame:
-    git:
-      url: https://github.com/flame-engine/flame.git
-      ref: main
-      path: packages/flame
+  flame: ^1.1.1
+  flame_forge2d: ^0.11.0
 
 dev_dependencies:
   flutter_test:

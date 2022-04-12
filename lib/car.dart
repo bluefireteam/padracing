@@ -1,7 +1,11 @@
+import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
+import 'ground_sensor.dart';
 import 'main.dart';
 import 'tire.dart';
 
@@ -9,12 +13,30 @@ class Car extends BodyComponent<PadRacingGame> {
   Car({required this.playerNumber, required this.cameraComponent})
       : super(priority: 2);
 
+  final ValueNotifier<int> lap = ValueNotifier<int>(0);
+  late final TextComponent lapText;
   final int playerNumber;
+  final Set<GroundSensor> passedStartControl = {};
   final CameraComponent cameraComponent;
   final double _backTireMaxDriveForce = 300.0;
   final double _frontTireMaxDriveForce = 500.0;
   final double _backTireMaxLateralImpulse = 8.5;
   final double _frontTireMaxLateralImpulse = 7.5;
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    lapText = TextComponent(
+      position: -cameraComponent.viewport.size / 2 + Vector2.all(20),
+    );
+    void updateLapText() {
+      lapText.text = 'Lap: ${lap.value}';
+    }
+
+    lap.addListener(updateLapText);
+    updateLapText();
+    cameraComponent.viewport.add(lapText);
+  }
 
   @override
   Body createBody() {
