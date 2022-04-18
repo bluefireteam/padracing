@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/extensions.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flutter/material.dart' show Colors;
+import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
+import 'package:flutter/material.dart' hide Image;
 
 import 'main.dart';
 

@@ -3,8 +3,8 @@ import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
-import 'package:flame_forge2d/flame_forge2d.dart' hide World;
-import 'package:flutter/material.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
+import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart';
 
 import 'background.dart';

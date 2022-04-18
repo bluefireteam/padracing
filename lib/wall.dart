@@ -1,12 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:flame_forge2d/body_component.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image;
-import 'package:forge2d/src/dynamics/body.dart';
 
 import 'main.dart';
 

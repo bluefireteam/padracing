@@ -1,6 +1,6 @@
 import 'package:flame/extensions.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flutter/material.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
+import 'package:flutter/material.dart' hide Image;
 
 import 'car.dart';
 
@@ -16,10 +16,12 @@ class GroundSensor extends BodyComponent {
   Body createBody() {
     paint.color =
         (isStart ? Colors.lightGreenAccent : Colors.red).withOpacity(0.5);
-    final groundBody = world.createBody(BodyDef(
-      position: position,
-      userData: this,
-    ));
+    final groundBody = world.createBody(
+      BodyDef(
+        position: position,
+        userData: this,
+      ),
+    );
     final shape = PolygonShape()..setAsBoxXY(size.x / 2, size.y / 2);
     final fixtureDef = FixtureDef(shape, isSensor: true);
     return groundBody..createFixture(fixtureDef);
