@@ -1,9 +1,10 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' hide Image;
 
 import 'ground_sensor.dart';
 import 'main.dart';
@@ -11,7 +12,12 @@ import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
   Car({required this.playerNumber, required this.cameraComponent})
-      : super(priority: 2);
+      : super(priority: 3);
+
+  static final colors = [
+    Colors.orange,
+    Colors.lightBlue,
+  ];
 
   final ValueNotifier<int> lap = ValueNotifier<int>(0);
   late final TextComponent lapText;
@@ -22,6 +28,23 @@ class Car extends BodyComponent<PadRacingGame> {
   final double _frontTireMaxDriveForce = 500.0;
   final double _backTireMaxLateralImpulse = 8.5;
   final double _frontTireMaxLateralImpulse = 7.5;
+  late final Image _image;
+  final size = const Size(6, 10);
+  final scale = 10.0;
+  late final _renderPosition = -size.toOffset() / 2;
+  late final _scaledRect = (size * scale).toRect();
+  late final _renderRect = _renderPosition & size;
+
+  final vertices = <Vector2>[
+    Vector2(1.5, -5.0),
+    Vector2(3.0, -2.5),
+    Vector2(2.8, 0.5),
+    Vector2(1.0, 5.0),
+    Vector2(-1.0, 5.0),
+    Vector2(-2.8, 0.5),
+    Vector2(-3.0, -2.5),
+    Vector2(-1.5, -5.0),
+  ];
 
   @override
   Future<void> onLoad() async {
@@ -36,6 +59,30 @@ class Car extends BodyComponent<PadRacingGame> {
     lap.addListener(updateLapText);
     updateLapText();
     cameraComponent.viewport.add(lapText);
+
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder, _scaledRect);
+    final path = Path();
+    paint.color = colors[playerNumber];
+    for (var i = 0.0; i < _scaledRect.width / 4; i++) {
+      paint.color = paint.color.darken(0.1);
+      path.reset();
+      final offsetVertices = vertices
+          .map(
+            (v) =>
+                v.toOffset() * scale -
+                Offset(i * v.x.sign, i * v.y.sign) +
+                _scaledRect.bottomRight / 2,
+          )
+          .toList();
+      path.addPolygon(offsetVertices, true);
+      canvas.drawPath(path, paint);
+    }
+    final picture = recorder.endRecording();
+    _image = await picture.toImage(
+      _scaledRect.width.toInt(),
+      _scaledRect.height.toInt(),
+    );
   }
 
   @override
@@ -49,17 +96,6 @@ class Car extends BodyComponent<PadRacingGame> {
     final body = world.createBody(def)
       ..userData = this
       ..angularDamping = 3.0;
-
-    final vertices = <Vector2>[
-      Vector2(1.5, 0.0),
-      Vector2(3.0, 2.5),
-      Vector2(2.8, 5.5),
-      Vector2(1.0, 10.0),
-      Vector2(-1.0, 10.0),
-      Vector2(-2.8, 5.5),
-      Vector2(-3.0, 2.5),
-      Vector2(-1.5, 0.0),
-    ];
 
     final shape = PolygonShape()..set(vertices);
     final fixtureDef = FixtureDef(shape)
@@ -83,8 +119,8 @@ class Car extends BodyComponent<PadRacingGame> {
         isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse,
         jointDef,
         isFrontTire
-            ? Vector2(isLeftTire ? -3.0 : 3.0, 8.5)
-            : Vector2(isLeftTire ? -3.0 : 3.0, 0.75),
+            ? Vector2(isLeftTire ? -3.0 : 3.0, 3.5)
+            : Vector2(isLeftTire ? -3.0 : 3.0, -4.25),
         isTurnableTire: isFrontTire,
       );
     });
@@ -95,6 +131,16 @@ class Car extends BodyComponent<PadRacingGame> {
 
   @override
   void update(double dt) {
-    cameraComponent.viewfinder..position = body.position;
+    cameraComponent.viewfinder.position = body.position;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    canvas.drawImageRect(
+      _image,
+      _scaledRect,
+      _renderRect,
+      paint,
+    );
   }
 }

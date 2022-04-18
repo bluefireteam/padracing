@@ -20,6 +20,15 @@ class Tire extends BodyComponent<PadRacingGame> {
     this.isTurnableTire = false,
   }) : super(paint: Paint()..color = Colors.grey.shade700, priority: 2);
 
+  final size = Vector2(0.5, 1.25);
+  late final RRect _renderRect = RRect.fromLTRBR(
+    -size.x,
+    -size.y,
+    size.x,
+    size.y,
+    const Radius.circular(0.3),
+  );
+
   final Set<LogicalKeyboardKey> pressedKeys;
   final double _maxDriveForce;
   final double _maxLateralImpulse;
@@ -94,6 +103,11 @@ class Tire extends BodyComponent<PadRacingGame> {
         );
       }
     }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    canvas.drawRRect(_renderRect, paint);
   }
 
   void _updateFriction() {
