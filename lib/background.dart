@@ -11,13 +11,13 @@ class Background extends PositionComponent
     with HasGameRef<PadRacingGame>, HasPaint {
   Background() : super(priority: 0);
 
-  final Random rng = Random(1337);
+  final Random rng = Random();
   late final Image _image;
 
   @override
   Future<void> onLoad() async {
     final trackSize = PadRacingGame.trackSize;
-    paint..color = Colors.green;
+    paint.color = Colors.green;
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, trackSize.toRect());
     final colors = [
@@ -26,8 +26,8 @@ class Background extends PositionComponent
       Colors.lightGreen.withAlpha(100),
     ];
 
-    for (var x = 0.0; x < trackSize.x; x += 0.2) {
-      for (var y = 0.0; y < trackSize.y; y += 0.2) {
+    for (var x = 0.0; x < trackSize.x; x++) {
+      for (var y = 0.0; y < trackSize.y; y++) {
         paint
           ..color = (colors..shuffle(rng)).first
           ..darken(rng.nextDouble());

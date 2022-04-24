@@ -13,6 +13,9 @@ import 'car.dart';
 import 'ground_sensor.dart';
 import 'wall.dart';
 
+/// Change this to 2 if you want to play multiplayer.
+const numberOfPlayers = 1;
+
 void main() {
   runApp(GameWidget(game: PadRacingGame()));
 }
@@ -38,16 +41,14 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
   @override
   Color backgroundColor() => Colors.grey.shade900;
 
-  static const numberOfPlayers = 2;
   static Vector2 trackSize = Vector2.all(500);
   late final World cameraWorld;
   late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
-  late final List<Set<LogicalKeyboardKey>> pressedKeys;
+  late final List<Set<LogicalKeyboardKey>> pressedKeySets;
 
   @override
   Future<void> onLoad() async {
     children.query();
-    const numberOfPlayers = PadRacingGame.numberOfPlayers;
     cameraWorld = World();
     await add(cameraWorld);
     final viewportSize = Vector2(canvasSize.x / numberOfPlayers, canvasSize.y);
@@ -81,7 +82,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     }
     cameraWorld.add(Ball());
 
-    pressedKeys = List.generate(numberOfPlayers, (_) => {});
+    pressedKeySets = List.generate(numberOfPlayers, (_) => {});
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
     addContactCallback(CarContactCallback());
   }
@@ -96,14 +97,16 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
       return KeyEventResult.ignored;
     }
 
-    pressedKeys.forEach((e) => e.clear());
-    keysPressed.forEach((LogicalKeyboardKey key) {
+    for (final pressedKeySet in pressedKeySets) {
+      pressedKeySet.clear();
+    }
+    for (final key in keysPressed) {
       activeKeyMaps.forEachIndexed((i, keyMap) {
         if (keyMap.containsKey(key)) {
-          pressedKeys[i].add(keyMap[key]!);
+          pressedKeySets[i].add(keyMap[key]!);
         }
       });
-    });
+    }
     return KeyEventResult.handled;
   }
 }

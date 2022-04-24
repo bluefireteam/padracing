@@ -45,12 +45,9 @@ class CarContactCallback extends ContactCallback<Car, GroundSensor> {
         // If the car has driven over one start control but then backed out
         // again, to be able to go over the finish line.
         car.passedStartControl.clear();
-        print('Clearing');
       }
-      print('Adding');
       car.passedStartControl.add(groundSensor);
     } else if (car.passedStartControl.length == 2) {
-      print('Finished');
       car.lap.value++;
       car.passedStartControl.clear();
     }

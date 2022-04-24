@@ -45,14 +45,14 @@ class Wall extends BodyComponent<PadRacingGame> {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    paint..color = Colors.green;
+    paint.color = Colors.green;
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, size.toRect());
 
     for (var x = 0.0; x < size.x; x += 0.2) {
       for (var y = 0.0; y < size.y; y += 0.2) {
-        paint..color = paint.color.darken(rng.nextDouble() / 20);
-        paint..color = paint.color.brighten(rng.nextDouble() / 20);
+        paint.color = paint.color.darken(rng.nextDouble() / 20);
+        paint.color = paint.color.brighten(rng.nextDouble() / 20);
         canvas.drawCircle(Offset(x, y), 0.2, paint);
       }
     }

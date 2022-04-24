@@ -15,7 +15,7 @@ class Car extends BodyComponent<PadRacingGame> {
       : super(priority: 3);
 
   static final colors = [
-    Colors.orange,
+    Colors.lightGreen,
     Colors.lightBlue,
   ];
 
@@ -25,7 +25,7 @@ class Car extends BodyComponent<PadRacingGame> {
   final Set<GroundSensor> passedStartControl = {};
   final CameraComponent cameraComponent;
   final double _backTireMaxDriveForce = 300.0;
-  final double _frontTireMaxDriveForce = 500.0;
+  final double _frontTireMaxDriveForce = 600.0;
   final double _backTireMaxLateralImpulse = 8.5;
   final double _frontTireMaxLateralImpulse = 7.5;
   late final Image _image;
@@ -87,7 +87,7 @@ class Car extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
-    paint..color = ColorExtension.random();
+    paint.color = ColorExtension.random();
     final startPosition =
         Vector2.all(20) + Vector2.all(20) * playerNumber.toDouble();
     final def = BodyDef()
@@ -114,7 +114,7 @@ class Car extends BodyComponent<PadRacingGame> {
       final isFrontTire = i <= 1;
       final isLeftTire = i.isEven;
       return Tire(
-        gameRef.pressedKeys[playerNumber],
+        gameRef.pressedKeySets[playerNumber],
         isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce,
         isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse,
         jointDef,

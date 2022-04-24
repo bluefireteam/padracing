@@ -46,7 +46,7 @@ class Ball extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
-    paint..color = Colors.amber;
+    paint.color = Colors.amber;
     final startPosition = Vector2(200, 245);
     final def = BodyDef()
       ..type = BodyType.kinematic
