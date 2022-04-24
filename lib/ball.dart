@@ -9,6 +9,7 @@ import 'main.dart';
 
 class Ball extends BodyComponent<PadRacingGame> {
   static const radius = 80.0;
+  final Vector2 position = Vector2(200, 245);
   final Random rng = Random();
   late final Image _image;
   late final Path _clipPath;
@@ -47,10 +48,9 @@ class Ball extends BodyComponent<PadRacingGame> {
   @override
   Body createBody() {
     paint.color = Colors.amber;
-    final startPosition = Vector2(200, 245);
     final def = BodyDef()
       ..type = BodyType.kinematic
-      ..position = startPosition;
+      ..position = position;
     final body = world.createBody(def)..angularVelocity = 1;
 
     final shape = CircleShape()..radius = radius;
