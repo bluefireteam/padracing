@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/extensions.dart';
+import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image;
 
@@ -37,37 +38,56 @@ class Wall extends BodyComponent<PadRacingGame> {
 
   final Vector2 position;
   final Vector2 size;
-  late final sizeRect = size.toRect();
 
   final Random rng = Random();
   late final Image _image;
 
+  final scale = 10.0;
+  late final _renderPosition = -size.toOffset() / 2;
+  late final _scaledRect = (size * scale).toRect();
+  late final _renderRect = _renderPosition & size.toSize();
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    paint.color = Colors.green;
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder, size.toRect());
 
-    for (var x = 0.0; x < size.x; x += 0.2) {
-      for (var y = 0.0; y < size.y; y += 0.2) {
-        paint.color = paint.color.darken(rng.nextDouble() / 20);
-        paint.color = paint.color.brighten(rng.nextDouble() / 20);
-        canvas.drawCircle(Offset(x, y), 0.2, paint);
-      }
+    paint.color = ColorExtension.fromRGBHexString('#14F596');
+
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder, _scaledRect);
+    final drawSize = _scaledRect.size.toVector2();
+    final center = (drawSize / 2).toOffset();
+    const step = 1.0;
+
+    canvas.drawRect(
+      Rect.fromCenter(center: center, width: drawSize.x, height: drawSize.y),
+      BasicPalette.black.paint(),
+    );
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = step;
+    for (var x = 0; x < 30; x++) {
+      canvas.drawRect(
+        Rect.fromCenter(center: center, width: drawSize.x, height: drawSize.y),
+        paint,
+      );
+      paint.color = paint.color.darken(0.07);
+      drawSize.x -= step;
+      drawSize.y -= step;
     }
     final picture = recorder.endRecording();
-    _image = await picture.toImage(size.x.toInt(), size.y.toInt());
+    _image = await picture.toImage(
+      _scaledRect.width.toInt(),
+      _scaledRect.height.toInt(),
+    );
   }
 
   @override
   void render(Canvas canvas) {
-    canvas.translate(-size.x / 2, -size.y / 2);
+    //canvas.translate(size.x / 2, size.y / 2);
     canvas.drawImageRect(
       _image,
-      sizeRect,
-      sizeRect,
-      //position.toPositionedRect(size),
+      _scaledRect,
+      _renderRect,
       paint,
     );
   }

@@ -45,10 +45,20 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   final random = Random();
   final Tween<double> noise = Tween(begin: -1, end: 1);
+  late final List<Paint> particlePaints;
   final ColorTween colorTween = ColorTween(
     begin: Colors.brown,
     end: Colors.black,
   );
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    particlePaints = List.generate(
+      10,
+      (_) => Paint()..color = colorTween.transform(random.nextDouble())!,
+    );
+  }
 
   @override
   Body createBody() {
@@ -70,7 +80,6 @@ class Tire extends BodyComponent<PadRacingGame> {
   @override
   void update(double dt) {
     if (body.isAwake || pressedKeys.isNotEmpty) {
-      body.setAwake(true);
       _updateTurn(dt);
       _updateFriction();
       _updateDrive();
@@ -82,16 +91,13 @@ class Tire extends BodyComponent<PadRacingGame> {
               count: 8,
               generator: (i) {
                 return AcceleratedParticle(
-                  lifespan: 2,
                   speed: Vector2(
-                        noise.transform(random.nextDouble()),
-                        noise.transform(random.nextDouble()),
-                      ) *
-                      i.toDouble(),
+                    noise.transform(random.nextDouble()),
+                    noise.transform(random.nextDouble()),
+                  )..scale(i.toDouble()),
                   child: CircleParticle(
                     radius: 0.2,
-                    paint: Paint()
-                      ..color = colorTween.transform(random.nextDouble())!,
+                    paint: (particlePaints..shuffle(random)).first,
                   ),
                 );
               },

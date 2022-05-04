@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/experimental.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
@@ -90,7 +91,7 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
   },
 ];
 
-class PadRacingGame extends Forge2DGame with KeyboardEvents {
+class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
 
   @override
@@ -101,18 +102,20 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
   late final CameraComponent startCamera;
   late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
   late final List<Set<LogicalKeyboardKey>> pressedKeySets;
+  late final TextComponent fpsText;
 
   @override
   Future<void> onLoad() async {
-    children.query();
+    fpsText =
+        TextComponent(position: Vector2(20, canvasSize.y - 40), priority: 5);
     cameraWorld = World();
     final ball = Ball();
     add(cameraWorld);
 
     cameraWorld.add(Background());
-    cameraWorld.add(GroundSensor(Vector2(25, 50), Vector2(50, 5), true));
-    cameraWorld.add(GroundSensor(Vector2(25, 70), Vector2(50, 5), true));
-    cameraWorld.add(GroundSensor(Vector2(52.5, 25), Vector2(5, 50), false));
+    cameraWorld.add(GroundSensor(1, Vector2(25, 50), Vector2(50, 5), false));
+    cameraWorld.add(GroundSensor(2, Vector2(25, 70), Vector2(50, 5), false));
+    cameraWorld.add(GroundSensor(3, Vector2(52.5, 25), Vector2(5, 50), true));
     cameraWorld.addAll(createWalls(trackSize));
     cameraWorld.add(ball);
 
@@ -125,6 +128,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     add(startCamera);
 
     addContactCallback(CarContactCallback());
+    add(fpsText);
   }
 
   void prepareStart({required int numberOfPlayers}) {
@@ -186,6 +190,12 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
 
     pressedKeySets = List.generate(numberOfPlayers, (_) => {});
     activeKeyMaps = List.generate(numberOfPlayers, (i) => playersKeys[i]);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    fpsText.text = 'FPS: ${fps()}';
   }
 
   @override

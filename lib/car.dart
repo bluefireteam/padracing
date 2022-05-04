@@ -6,6 +6,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image;
 
+import 'game_colors.dart';
 import 'ground_sensor.dart';
 import 'main.dart';
 import 'tire.dart';
@@ -15,8 +16,8 @@ class Car extends BodyComponent<PadRacingGame> {
       : super(priority: 3);
 
   static final colors = [
-    Colors.lightGreen,
-    Colors.lightBlue,
+    GameColors.green.color,
+    GameColors.blue.color,
   ];
 
   final ValueNotifier<int> lap = ValueNotifier<int>(0);
