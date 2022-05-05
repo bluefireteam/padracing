@@ -4,9 +4,8 @@ import 'dart:ui';
 import 'package:flame/extensions.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:flutter/material.dart' hide Image;
 
-import 'main.dart';
+import 'game.dart';
 
 List<Wall> createWalls(Vector2 size) {
   final topCenter = Vector2(size.x / 2, 0);
@@ -17,19 +16,19 @@ List<Wall> createWalls(Vector2 size) {
   final filledSize = size.clone() + Vector2.all(5);
   return [
     Wall(topCenter, Vector2(filledSize.x, 5)),
-    Wall(bottomCenter, Vector2(filledSize.y, 5)),
     Wall(leftCenter, Vector2(5, filledSize.y)),
-    Wall(rightCenter, Vector2(5, filledSize.y)),
     Wall(Vector2(52.5, 240), Vector2(5, 380)),
     Wall(Vector2(200, 50), Vector2(300, 5)),
     Wall(Vector2(72.5, 300), Vector2(5, 400)),
     Wall(Vector2(180, 100), Vector2(220, 5)),
     Wall(Vector2(350, 105), Vector2(5, 115)),
-    Wall(Vector2(350, 312.5), Vector2(5, 180)),
     Wall(Vector2(310, 160), Vector2(240, 5)),
-    Wall(Vector2(210, 400), Vector2(280, 5)),
+    Wall(Vector2(211.5, 400), Vector2(283, 5)),
+    Wall(Vector2(351, 312.5), Vector2(5, 180)),
     Wall(Vector2(430, 302.5), Vector2(5, 290)),
     Wall(Vector2(292.5, 450), Vector2(280, 5)),
+    Wall(bottomCenter, Vector2(filledSize.y, 5)),
+    Wall(rightCenter, Vector2(5, filledSize.y)),
   ];
 }
 
@@ -83,7 +82,6 @@ class Wall extends BodyComponent<PadRacingGame> {
 
   @override
   void render(Canvas canvas) {
-    //canvas.translate(size.x / 2, size.y / 2);
     canvas.drawImageRect(
       _image,
       _scaledRect,

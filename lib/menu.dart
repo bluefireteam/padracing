@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main.dart';
+import 'game.dart';
 
 class Menu extends StatelessWidget {
   const Menu(this.game, {Key? key}) : super(key: key);

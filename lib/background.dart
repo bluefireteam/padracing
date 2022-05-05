@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart' hide Image;
 
-import 'main.dart';
+import 'game.dart';
 
 class Background extends PositionComponent
     with HasGameRef<PadRacingGame>, HasPaint {

@@ -1,22 +1,30 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame/palette.dart';
 import 'package:flame/particles.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart';
 
-import 'main.dart';
+import 'game.dart';
 
 class Tire extends BodyComponent<PadRacingGame> {
   Tire(
+    this.color,
     this.pressedKeys,
     this._maxDriveForce,
     this._maxLateralImpulse,
     this.jointDef,
     this.jointAnchor, {
     this.isTurnableTire = false,
-  }) : super(paint: Paint()..color = Colors.grey.shade700, priority: 2);
+  }) : super(
+          paint: Paint()
+            ..color = color
+            ..strokeWidth = 0.2
+            ..style = PaintingStyle.stroke,
+          priority: 2,
+        );
 
   final size = Vector2(0.5, 1.25);
   late final RRect _renderRect = RRect.fromLTRBR(
@@ -46,10 +54,12 @@ class Tire extends BodyComponent<PadRacingGame> {
   final random = Random();
   final Tween<double> noise = Tween(begin: -1, end: 1);
   late final List<Paint> particlePaints;
-  final ColorTween colorTween = ColorTween(
-    begin: Colors.brown,
+  final Color color;
+  late final ColorTween colorTween = ColorTween(
+    begin: color,
     end: Colors.black,
   );
+  final Paint _black = BasicPalette.black.paint();
 
   @override
   Future<void> onLoad() async {
@@ -101,6 +111,7 @@ class Tire extends BodyComponent<PadRacingGame> {
                   ),
                 );
               },
+              lifespan: 0.3,
             ),
             priority: 1,
           ),
@@ -111,6 +122,7 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   @override
   void render(Canvas canvas) {
+    canvas.drawRRect(_renderRect, _black);
     canvas.drawRRect(_renderRect, paint);
   }
 

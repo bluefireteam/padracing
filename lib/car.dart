@@ -1,14 +1,13 @@
 import 'dart:ui';
 
-import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image;
 
+import 'game.dart';
 import 'game_colors.dart';
 import 'ground_sensor.dart';
-import 'main.dart';
 import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
@@ -20,8 +19,7 @@ class Car extends BodyComponent<PadRacingGame> {
     GameColors.blue.color,
   ];
 
-  final ValueNotifier<int> lap = ValueNotifier<int>(0);
-  late final TextComponent lapText;
+  final ValueNotifier<int> lapNotifier = ValueNotifier<int>(1);
   final int playerNumber;
   final Set<GroundSensor> passedStartControl = {};
   final CameraComponent cameraComponent;
@@ -50,16 +48,6 @@ class Car extends BodyComponent<PadRacingGame> {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    lapText = TextComponent(
-      position: -cameraComponent.viewport.size / 2 + Vector2.all(20),
-    );
-    void updateLapText() {
-      lapText.text = 'Lap: ${lap.value}';
-    }
-
-    lap.addListener(updateLapText);
-    updateLapText();
-    cameraComponent.viewport.add(lapText);
 
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, _scaledRect);
@@ -88,7 +76,6 @@ class Car extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
-    paint.color = ColorExtension.random();
     final startPosition =
         Vector2.all(20) + Vector2.all(20) * playerNumber.toDouble();
     final def = BodyDef()
@@ -115,6 +102,7 @@ class Car extends BodyComponent<PadRacingGame> {
       final isFrontTire = i <= 1;
       final isLeftTire = i.isEven;
       return Tire(
+        colors[playerNumber],
         gameRef.pressedKeySets[playerNumber],
         isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce,
         isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse,

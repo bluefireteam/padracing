@@ -2,10 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/extensions.dart';
+import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:flutter/material.dart' hide Image;
 
-import 'main.dart';
+import 'game.dart';
+import 'game_colors.dart';
 
 class Ball extends BodyComponent<PadRacingGame> {
   static const radius = 80.0;
@@ -22,9 +23,8 @@ class Ball extends BodyComponent<PadRacingGame> {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder, trackSize.toRect());
     final colors = [
-      Colors.lightBlue,
-      Colors.blue,
-      Colors.deepPurpleAccent,
+      GameColors.green.color,
+      //GameColors.blue.color,
     ];
     _clipPath = Path()
       ..addOval(Rect.fromCircle(center: Offset.zero, radius: radius));
@@ -47,7 +47,6 @@ class Ball extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
-    paint.color = Colors.amber;
     final def = BodyDef()
       ..type = BodyType.kinematic
       ..position = position;
@@ -60,10 +59,22 @@ class Ball extends BodyComponent<PadRacingGame> {
     return body..createFixture(fixtureDef);
   }
 
+  final _shaderPaint = GameColors.green.paint
+    ..shader = Gradient.radial(
+      Offset.zero,
+      radius,
+      [
+        GameColors.green.color,
+        BasicPalette.black.color,
+      ],
+      null,
+      TileMode.clamp,
+      null,
+      const Offset(radius / 2, radius / 2),
+    );
+
   @override
   void render(Canvas canvas) {
-    canvas.clipPath(_clipPath);
-    canvas.translate(-radius, -radius);
-    canvas.drawImage(_image, Offset.zero, paint);
+    canvas.drawCircle(Offset.zero, radius, _shaderPaint);
   }
 }
