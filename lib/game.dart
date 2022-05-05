@@ -92,6 +92,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
     overlays.remove('menu');
     startCamera.removeFromParent();
     final viewportSize = Vector2(canvasSize.x / numberOfPlayers, canvasSize.y);
+
     RectangleComponent viewportRimGenerator() =>
         RectangleComponent(size: viewportSize, anchor: Anchor.center)
           ..paint.color = Colors.blue
@@ -110,21 +111,24 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
         ..viewfinder.anchor = Anchor.center
         ..viewfinder.zoom = playZoom;
     });
+
+    final mapCameraSize = Vector2.all(500);
+    const mapCameraZoom = 0.5;
     final mapCameras = List.generate(numberOfPlayers, (i) {
       return CameraComponent(
         world: cameraWorld,
-        viewport: FixedSizeViewport(300, 300)
+        viewport: FixedSizeViewport(mapCameraSize.x, mapCameraSize.y)
           ..position = Vector2(
-            (canvasSize.x / numberOfPlayers) * (i + 0.7),
-            40,
+            viewportSize.x / 2 - mapCameraSize.x * mapCameraZoom - 30,
+            -(canvasSize.y / 2) + 30,
           ),
       )
         ..viewfinder.anchor = Anchor.center
-        ..viewfinder.zoom = 0.3;
+        ..viewfinder.zoom = mapCameraZoom;
     });
 
     addAll(cameras);
-    addAll(mapCameras);
+    //addAll(mapCameras);
     for (var i = 0; i < numberOfPlayers; i++) {
       final car = Car(playerNumber: i, cameraComponent: cameras[i]);
       cameraWorld.add(car);
@@ -132,7 +136,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
         lapNotifier: car.lapNotifier,
         position: -cameras[i].viewport.size / 2 + Vector2.all(100),
       );
-      cameras[i].viewport.add(lapText);
+      cameras[i].viewport.addAll([lapText, mapCameras[i]]);
     }
 
     pressedKeySets = List.generate(numberOfPlayers, (_) => {});

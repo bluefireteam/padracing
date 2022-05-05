@@ -31,7 +31,7 @@ class LapText extends PositionComponent {
       ),
     );
     final lapCounter = TextComponent(
-      position: Vector2(0, 15),
+      position: Vector2(0, 10),
       anchor: Anchor.center,
       textRenderer: lapCountRenderer,
     );

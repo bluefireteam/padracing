@@ -111,7 +111,7 @@ class Tire extends BodyComponent<PadRacingGame> {
                   ),
                 );
               },
-              lifespan: 0.3,
+              lifespan: 0.1 + (random.nextInt(20) / 100),
             ),
             priority: 1,
           ),
