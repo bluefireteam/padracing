@@ -8,17 +8,17 @@ import 'menu.dart';
 void main() {
   final theme = ThemeData(
     textTheme: TextTheme(
-      headline1: GoogleFonts.saira(
-        fontSize: 21,
+      headline1: GoogleFonts.vt323(
+        fontSize: 35,
         color: Colors.white,
       ),
-      button: GoogleFonts.saira(
-        fontSize: 18,
+      button: GoogleFonts.vt323(
+        fontSize: 30,
         fontWeight: FontWeight.w500,
       ),
-      bodyText2: GoogleFonts.saira(
+      bodyText2: GoogleFonts.vt323(
         fontSize: 18,
-        color: Colors.white,
+        color: Colors.grey,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

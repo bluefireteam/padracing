@@ -20,7 +20,7 @@ class GroundSensor extends BodyComponent {
 
   @override
   Body createBody() {
-    paint.color = (isFinish ? GameColors.blue.color : GameColors.green.color)
+    paint.color = (isFinish ? GameColors.green.color : GameColors.green.color)
       ..withOpacity(0.5);
     paint
       ..style = PaintingStyle.fill

@@ -1,45 +1,38 @@
 import 'package:flutter/material.dart';
 
 import 'game.dart';
+import 'game_colors.dart';
 
 class Menu extends StatelessWidget {
   const Menu(this.game, {Key? key}) : super(key: key);
 
   final PadRacingGame game;
 
-  static const instructionText =
-      '''You are a crazy scientist god solving a slider puzzle in space. 
-Since you are a god, some rules can be bent (press the buttons),
-it doesn't necessarily make it easier though...\n
-The blocks don't have to have the correct angle for you to win
-(they can be upside-down for example), as long as they go from
-1 to 15 in a square.''';
-
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Material(
       color: Colors.transparent,
       child: Center(
         child: Wrap(
           children: [
             Card(
-              color: Colors.grey.shade200.withOpacity(0.8),
-              elevation: 5,
+              color: Colors.black,
+              shadowColor: GameColors.green.color,
+              elevation: 10,
               margin: const EdgeInsets.all(20),
               child: Container(
                 margin: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    //LogoGameWidget(),
-                    const Text(
+                    Text(
                       'PadRacing',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      style: textTheme.headline1,
                     ),
-                    //if (state.showInstructions)
-                    //  const Text(
-                    //    instructionText,
-                    //    style: TextStyle(color: Colors.black, fontSize: 16),
-                    //  ),
+                    Text(
+                      'First to 3 laps win',
+                      style: textTheme.bodyText2,
+                    ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       child: const Text('1 Player'),
@@ -47,12 +40,20 @@ The blocks don't have to have the correct angle for you to win
                         game.prepareStart(numberOfPlayers: 1);
                       },
                     ),
+                    Text(
+                      'Arrow keys',
+                      style: textTheme.bodyText2,
+                    ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       child: const Text('2 Players'),
                       onPressed: () {
                         game.prepareStart(numberOfPlayers: 2);
                       },
+                    ),
+                    Text(
+                      'ASDW',
+                      style: textTheme.bodyText2,
                     ),
                   ],
                 ),

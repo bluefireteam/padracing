@@ -126,9 +126,8 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
         ..viewfinder.anchor = Anchor.center
         ..viewfinder.zoom = mapCameraZoom;
     });
-
     addAll(cameras);
-    //addAll(mapCameras);
+
     for (var i = 0; i < numberOfPlayers; i++) {
       final car = Car(playerNumber: i, cameraComponent: cameras[i]);
       cameraWorld.add(car);
@@ -146,7 +145,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   @override
   void update(double dt) {
     super.update(dt);
-    fpsText.text = 'FPS: ${fps()}';
+    //fpsText.text = 'FPS: ${fps()}';
   }
 
   @override
