@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -6,7 +8,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:flutter/services.dart';
 
 import 'ball.dart';
@@ -43,6 +45,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
   late final List<Set<LogicalKeyboardKey>> pressedKeySets;
   late final TextComponent fpsText;
+  final cars = <Car>[];
 
   @override
   Future<void> onLoad() async {
@@ -130,6 +133,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
     for (var i = 0; i < numberOfPlayers; i++) {
       final car = Car(playerNumber: i, cameraComponent: cameras[i]);
+      cars.add(car);
       cameraWorld.add(car);
       final lapText = LapText(
         lapNotifier: car.lapNotifier,
@@ -145,7 +149,8 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   @override
   void update(double dt) {
     super.update(dt);
-    //fpsText.text = 'FPS: ${fps()}';
+    // TODO(Lukas): Remove
+    fpsText.text = 'FPS: ${fps()}';
   }
 
   @override

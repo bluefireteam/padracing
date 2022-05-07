@@ -1,5 +1,5 @@
 import 'package:flame/extensions.dart';
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart' hide Image, Gradient;
 
 enum GameColors {
   green,

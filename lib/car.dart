@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 import 'game_colors.dart';
@@ -19,6 +19,7 @@ class Car extends BodyComponent<PadRacingGame> {
     GameColors.blue.color,
   ];
 
+  late final List<Tire> tires;
   final ValueNotifier<int> lapNotifier = ValueNotifier<int>(1);
   final int playerNumber;
   final Set<GroundSensor> passedStartControl = {};
@@ -98,10 +99,11 @@ class Car extends BodyComponent<PadRacingGame> {
     jointDef.upperAngle = 0.0;
     jointDef.localAnchorB.setZero();
 
-    final tires = List.generate(4, (i) {
+    tires = List.generate(4, (i) {
       final isFrontTire = i <= 1;
       final isLeftTire = i.isEven;
       return Tire(
+        this,
         colors[playerNumber],
         gameRef.pressedKeySets[playerNumber],
         isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce,

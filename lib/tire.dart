@@ -2,15 +2,17 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
-import 'package:flame/particles.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:flutter/services.dart';
 
+import 'car.dart';
 import 'game.dart';
+import 'trail.dart';
 
 class Tire extends BodyComponent<PadRacingGame> {
   Tire(
+    this.car,
     this.color,
     this.pressedKeys,
     this._maxDriveForce,
@@ -26,6 +28,7 @@ class Tire extends BodyComponent<PadRacingGame> {
           priority: 2,
         );
 
+  final Car car;
   final size = Vector2(0.5, 1.25);
   late final RRect _renderRect = RRect.fromLTRBR(
     -size.x,
@@ -38,7 +41,8 @@ class Tire extends BodyComponent<PadRacingGame> {
   final Set<LogicalKeyboardKey> pressedKeys;
   final double _maxDriveForce;
   final double _maxLateralImpulse;
-  double _currentTraction = 1.0;
+  // Make mutable if ice or something should be implemented
+  final double _currentTraction = 1.0;
 
   final double _maxForwardSpeed = 250.0;
   final double _maxBackwardSpeed = -40.0;
@@ -64,10 +68,7 @@ class Tire extends BodyComponent<PadRacingGame> {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    particlePaints = List.generate(
-      10,
-      (_) => Paint()..color = colorTween.transform(random.nextDouble())!,
-    );
+    gameRef.cameraWorld.add(Trail(car: car, tire: this));
   }
 
   @override
@@ -93,30 +94,6 @@ class Tire extends BodyComponent<PadRacingGame> {
       _updateTurn(dt);
       _updateFriction();
       _updateDrive();
-      if (body.linearVelocity.length2 > 100) {
-        gameRef.cameraWorld.add(
-          ParticleSystemComponent(
-            position: body.position,
-            particle: Particle.generate(
-              count: 8,
-              generator: (i) {
-                return AcceleratedParticle(
-                  speed: Vector2(
-                    noise.transform(random.nextDouble()),
-                    noise.transform(random.nextDouble()),
-                  )..scale(i.toDouble()),
-                  child: CircleParticle(
-                    radius: 0.2,
-                    paint: (particlePaints..shuffle(random)).first,
-                  ),
-                );
-              },
-              lifespan: 0.1 + (random.nextInt(20) / 100),
-            ),
-            priority: 1,
-          ),
-        );
-      }
     }
   }
 

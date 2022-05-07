@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 import 'game_colors.dart';

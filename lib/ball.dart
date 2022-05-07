@@ -12,37 +12,11 @@ class Ball extends BodyComponent<PadRacingGame> {
   static const radius = 80.0;
   final Vector2 position = Vector2(200, 245);
   final Random rng = Random();
-  late final Image _image;
-  late final Path _clipPath;
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
     renderBody = false;
-    final trackSize = PadRacingGame.trackSize;
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder, trackSize.toRect());
-    final colors = [
-      GameColors.green.color,
-      //GameColors.blue.color,
-    ];
-    _clipPath = Path()
-      ..addOval(Rect.fromCircle(center: Offset.zero, radius: radius));
-
-    canvas.translate(radius, radius);
-
-    for (var angle = 0.0; angle < 2 * pi; angle += 0.05) {
-      canvas.rotate(0.05);
-      for (var x = radius; x > 0; x -= 0.2) {
-        paint
-          ..color = (colors..shuffle(rng)).first
-          ..darken(x / radius);
-        canvas.drawCircle(Offset(x, 0), 3, paint);
-      }
-    }
-    final picture = recorder.endRecording();
-    _image = await picture.toImage((radius * 2).toInt(), (radius * 2).toInt());
-    //gameRef.camera.followBodyComponent(this);
   }
 
   @override
