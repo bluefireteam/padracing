@@ -2,14 +2,15 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/extensions.dart';
+import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'car.dart';
 import 'game_colors.dart';
 
-class GroundSensor extends BodyComponent {
-  GroundSensor(this.id, this.position, this.size, this.isFinish)
+class GroundLine extends BodyComponent {
+  GroundLine(this.id, this.position, this.size, this.isFinish)
       : super(priority: 1);
 
   final int id;
@@ -17,6 +18,15 @@ class GroundSensor extends BodyComponent {
   final Vector2 position;
   final Vector2 size;
   late final Rect rect = size.toRect();
+  Image? _finishOverlay;
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    if (isFinish) {
+      _finishOverlay = await createFinishOverlay();
+    }
+  }
 
   @override
   Body createBody() {
@@ -44,19 +54,41 @@ class GroundSensor extends BodyComponent {
     return groundBody..createFixture(fixtureDef);
   }
 
+  late final Rect _scaledRect = (size * 10).toRect();
+  late final Rect _drawRect = size.toRect();
+
+  Future<Image> createFinishOverlay() async {
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder, _scaledRect);
+    final step = _scaledRect.width / 2;
+    final black = BasicPalette.black.paint();
+
+    for (var i = 0; i * step < _scaledRect.height; i++) {
+      canvas.drawRect(
+        Rect.fromLTWH(i.isEven ? 0 : step, i * step, step, step),
+        black,
+      );
+    }
+    final picture = recorder.endRecording();
+    return picture.toImage(
+      _scaledRect.width.toInt(),
+      _scaledRect.height.toInt(),
+    );
+  }
+
   @override
   void render(Canvas canvas) {
     canvas.translate(-size.x / 2, -size.y / 2);
-    canvas.drawRect(
-      rect,
-      paint,
-    );
+    canvas.drawRect(rect, paint);
+    if (_finishOverlay != null) {
+      canvas.drawImageRect(_finishOverlay!, _scaledRect, _drawRect, paint);
+    }
   }
 }
 
-class CarContactCallback extends ContactCallback<Car, GroundSensor> {
+class CarContactCallback extends ContactCallback<Car, GroundLine> {
   @override
-  void begin(Car car, GroundSensor groundSensor, Contact contact) {
+  void begin(Car car, GroundLine groundSensor, Contact contact) {
     if (groundSensor.isFinish && car.passedStartControl.length == 2) {
       car.lapNotifier.value++;
       car.passedStartControl.clear();

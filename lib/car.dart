@@ -7,7 +7,7 @@ import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 import 'game_colors.dart';
-import 'ground_sensor.dart';
+import 'ground_line.dart';
 import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
@@ -22,7 +22,7 @@ class Car extends BodyComponent<PadRacingGame> {
   late final List<Tire> tires;
   final ValueNotifier<int> lapNotifier = ValueNotifier<int>(1);
   final int playerNumber;
-  final Set<GroundSensor> passedStartControl = {};
+  final Set<GroundLine> passedStartControl = {};
   final CameraComponent cameraComponent;
   final double _backTireMaxDriveForce = 300.0;
   final double _frontTireMaxDriveForce = 600.0;
@@ -54,8 +54,9 @@ class Car extends BodyComponent<PadRacingGame> {
     final canvas = Canvas(recorder, _scaledRect);
     final path = Path();
     paint.color = colors[playerNumber];
+    final bodyPaint = Paint()..color = paint.color;
     for (var i = 0.0; i < _scaledRect.width / 4; i++) {
-      paint.color = paint.color.darken(0.1);
+      bodyPaint.color = bodyPaint.color.darken(0.1);
       path.reset();
       final offsetVertices = vertices
           .map(
@@ -66,7 +67,7 @@ class Car extends BodyComponent<PadRacingGame> {
           )
           .toList();
       path.addPolygon(offsetVertices, true);
-      canvas.drawPath(path, paint);
+      canvas.drawPath(path, bodyPaint);
     }
     final picture = recorder.endRecording();
     _image = await picture.toImage(

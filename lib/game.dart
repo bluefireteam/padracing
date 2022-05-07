@@ -15,7 +15,8 @@ import 'package:flutter/services.dart';
 import 'background.dart';
 import 'ball.dart';
 import 'car.dart';
-import 'ground_sensor.dart';
+import 'game_colors.dart';
+import 'ground_line.dart';
 import 'lap_text.dart';
 import 'wall.dart';
 
@@ -63,9 +64,9 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
     cameraWorld.addAll([
       Background(),
-      GroundSensor(1, Vector2(25, 50), Vector2(50, 5), false),
-      GroundSensor(2, Vector2(25, 70), Vector2(50, 5), false),
-      GroundSensor(3, Vector2(52.5, 25), Vector2(5, 50), true),
+      GroundLine(1, Vector2(25, 50), Vector2(50, 5), false),
+      GroundLine(2, Vector2(25, 70), Vector2(50, 5), false),
+      GroundLine(3, Vector2(52.5, 25), Vector2(5, 50), true),
       Ball(),
       ...createWalls(trackSize),
     ]);
@@ -110,7 +111,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
     RectangleComponent viewportRimGenerator() =>
         RectangleComponent(size: viewportSize, anchor: Anchor.center)
-          ..paint.color = Colors.blue
+          ..paint.color = GameColors.blue.color
           ..paint.strokeWidth = 2.0
           ..paint.style = PaintingStyle.stroke;
     final cameras = List.generate(numberOfPlayers, (i) {
@@ -146,7 +147,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
     for (var i = 0; i < numberOfPlayers; i++) {
       final car = Car(playerNumber: i, cameraComponent: cameras[i]);
       final lapText = LapText(
-        lapNotifier: car.lapNotifier,
+        car: car,
         position: -cameras[i].viewport.size / 2 + Vector2.all(100),
       );
 

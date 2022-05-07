@@ -16,12 +16,12 @@ class Trail extends Component with HasPaint {
   final Tire tire;
 
   final trail = <Offset>[];
-  final _trailLength = 50;
+  final _trailLength = 30;
 
   @override
   Future<void> onLoad() async {
     paint
-      ..color = tire.paint.color
+      ..color = (tire.paint.color.withOpacity(0.9))
       ..strokeWidth = 1.0;
   }
 

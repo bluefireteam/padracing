@@ -3,14 +3,15 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:google_fonts/google_fonts.dart';
 
+import 'car.dart';
 import 'game.dart';
-import 'game_colors.dart';
 
 class LapText extends PositionComponent with HasGameRef<PadRacingGame> {
-  LapText({required this.lapNotifier, required Vector2 position})
+  LapText({required this.car, required Vector2 position})
       : super(position: position);
 
-  final ValueNotifier<int> lapNotifier;
+  final Car car;
+  late final ValueNotifier<int> lapNotifier = car.lapNotifier;
   late final TextComponent _timePassedComponent;
 
   @override
@@ -18,7 +19,7 @@ class LapText extends PositionComponent with HasGameRef<PadRacingGame> {
     super.onLoad();
     final textStyle = GoogleFonts.vt323(
       fontSize: 35,
-      color: GameColors.green.color,
+      color: car.paint.color,
     );
     final defaultRenderer = TextPaint(style: textStyle);
     final lapCountRenderer = TextPaint(
@@ -54,6 +55,11 @@ class LapText extends PositionComponent with HasGameRef<PadRacingGame> {
     );
     add(_timePassedComponent);
 
+    _backgroundPaint = Paint()
+      ..color = car.paint.color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
     lapNotifier.addListener(updateLapText);
     updateLapText();
   }
@@ -70,9 +76,7 @@ class LapText extends PositionComponent with HasGameRef<PadRacingGame> {
     Rect.fromCircle(center: Offset.zero, radius: 50),
     const Radius.circular(10),
   );
-  final _backgroundPaint = GameColors.green.paint
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
+  late final Paint _backgroundPaint;
 
   @override
   void render(Canvas canvas) {
