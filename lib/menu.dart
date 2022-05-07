@@ -1,7 +1,11 @@
+import 'dart:html' as html;
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 import 'game_colors.dart';
+import 'menu_card.dart';
 
 class Menu extends StatelessWidget {
   const Menu(this.game, {Key? key}) : super(key: key);
@@ -16,21 +20,16 @@ class Menu extends StatelessWidget {
       child: Center(
         child: Wrap(
           children: [
-            Card(
-              color: Colors.black,
-              shadowColor: GameColors.green.color,
-              elevation: 10,
-              margin: const EdgeInsets.all(20),
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                child: Column(
+            Column(
+              children: [
+                MenuCard(
                   children: [
                     Text(
                       'PadRacing',
                       style: textTheme.headline1,
                     ),
                     Text(
-                      'First to 3 laps wins',
+                      'First to 3 laps win',
                       style: textTheme.bodyText1,
                     ),
                     const SizedBox(height: 10),
@@ -57,7 +56,58 @@ class Menu extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
+                MenuCard(
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Made by ',
+                            style: textTheme.bodyText2,
+                          ),
+                          TextSpan(
+                            text: 'Lukas Klingsbo',
+                            style: textTheme.bodyText2
+                                ?.copyWith(color: GameColors.green.color),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                //ignore: unsafe_html
+                                html.window.open(
+                                  'https://github.com/spydon',
+                                  '_blank',
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Checkout the ',
+                            style: textTheme.bodyText2,
+                          ),
+                          TextSpan(
+                            text: 'repository',
+                            style: textTheme.bodyText2
+                                ?.copyWith(color: GameColors.green.color),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                //ignore: unsafe_html
+                                html.window.open(
+                                  'https://github.com/bluefireteam/padracing',
+                                  '_blank',
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),

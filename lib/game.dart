@@ -1,12 +1,10 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
-import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image, Gradient;
@@ -35,7 +33,7 @@ final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> playersKeys = [
   },
 ];
 
-class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
+class PadRacingGame extends Forge2DGame with KeyboardEvents {
   PadRacingGame() : super(gravity: Vector2.zero(), zoom: 1);
 
   @override
@@ -48,17 +46,14 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   late CameraComponent startCamera;
   late List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
   late List<Set<LogicalKeyboardKey>> pressedKeySets;
-  late final TextComponent fpsText;
   final cars = <Car>[];
-  bool isGameOver = false;
+  bool isGameOver = true;
   Car? winner;
   double _timePassed = 0;
 
   @override
   Future<void> onLoad() async {
     children.register<CameraComponent>();
-    fpsText =
-        TextComponent(position: Vector2(20, canvasSize.y - 40), priority: 5);
     cameraWorld = World();
     add(cameraWorld);
 
@@ -72,7 +67,6 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
     ]);
 
     addContactCallback(CarContactCallback());
-    add(fpsText);
     openMenu();
   }
 
@@ -88,7 +82,6 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   }
 
   void prepareStart({required int numberOfPlayers}) {
-    overlays.remove('menu');
     startCamera.viewfinder
       ..add(
         ScaleEffect.to(
@@ -105,13 +98,15 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   }
 
   void start({required int numberOfPlayers}) {
+    isGameOver = false;
     overlays.remove('menu');
     startCamera.removeFromParent();
     final isHorizontal = canvasSize.x > canvasSize.y;
-    Vector2 alignedVector(
-        {double longMultiplier = 1,
-        double shortMultiplier = 1,
-        double longMultiplierExtra = 1}) {
+    Vector2 alignedVector({
+      double longMultiplier = 1,
+      double shortMultiplier = 1,
+      double longMultiplierExtra = 1,
+    }) {
       return Vector2(
         isHorizontal
             ? canvasSize.x * longMultiplier * longMultiplierExtra
@@ -134,9 +129,10 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
         world: cameraWorld,
         viewport: FixedSizeViewport(viewportSize.x, viewportSize.y)
           ..position = alignedVector(
-              longMultiplier: 1 / numberOfPlayers,
-              shortMultiplier: 1 / 2,
-              longMultiplierExtra: i + 0.5)
+            longMultiplier: 1 / numberOfPlayers,
+            shortMultiplier: 1 / 2,
+            longMultiplierExtra: i + 0.5,
+          )
           ..add(viewportRimGenerator()),
       )
         ..viewfinder.anchor = Anchor.center
@@ -196,8 +192,6 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
       return;
     }
     _timePassed += dt;
-    // TODO(Lukas): Remove
-    fpsText.text = 'FPS: ${fps()}';
   }
 
   @override
@@ -229,15 +223,18 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
   void reset() {
     _clearPressedKeys();
-    activeKeyMaps.forEach((keyMap) => keyMap.clear());
-    isGameOver = false;
+    for (final keyMap in activeKeyMaps) {
+      keyMap.clear();
+    }
     _timePassed = 0;
     overlays.remove('gameover');
     openMenu();
-    cars.forEach((car) => car.removeFromParent());
-    children.query<CameraComponent>().forEach(
-          (camera) => camera.removeFromParent(),
-        );
+    for (final car in cars) {
+      car.removeFromParent();
+    }
+    for (final camera in children.query<CameraComponent>()) {
+      camera.removeFromParent();
+    }
   }
 
   String _maybePrefixZero(int number) {

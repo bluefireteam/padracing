@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'car.dart';
 import 'tire.dart';

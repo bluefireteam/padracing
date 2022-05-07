@@ -138,6 +138,8 @@ class Car extends BodyComponent<PadRacingGame> {
 
   @override
   void onRemove() {
-    tires.forEach((tire) => tire.removeFromParent());
+    for (final tire in tires) {
+      tire.removeFromParent();
+    }
   }
 }
