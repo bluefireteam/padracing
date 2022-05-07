@@ -3,13 +3,15 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:google_fonts/google_fonts.dart';
 
+import 'game.dart';
 import 'game_colors.dart';
 
-class LapText extends PositionComponent {
+class LapText extends PositionComponent with HasGameRef<PadRacingGame> {
   LapText({required this.lapNotifier, required Vector2 position})
       : super(position: position);
 
   final ValueNotifier<int> lapNotifier;
+  late final TextComponent _timePassedComponent;
 
   @override
   Future<void> onLoad() async {
@@ -18,7 +20,7 @@ class LapText extends PositionComponent {
       fontSize: 35,
       color: GameColors.green.color,
     );
-    final lapLabelRenderer = TextPaint(style: textStyle);
+    final defaultRenderer = TextPaint(style: textStyle);
     final lapCountRenderer = TextPaint(
       style: textStyle.copyWith(fontSize: 55, fontWeight: FontWeight.bold),
     );
@@ -27,7 +29,7 @@ class LapText extends PositionComponent {
         text: 'Lap',
         position: Vector2(0, -20),
         anchor: Anchor.center,
-        textRenderer: lapLabelRenderer,
+        textRenderer: defaultRenderer,
       ),
     );
     final lapCounter = TextComponent(
@@ -37,12 +39,31 @@ class LapText extends PositionComponent {
     );
     add(lapCounter);
     void updateLapText() {
-      final prefix = lapNotifier.value < 10 ? '0' : '';
-      lapCounter.text = '$prefix${lapNotifier.value}';
+      if (lapNotifier.value <= PadRacingGame.numberOfLaps) {
+        final prefix = lapNotifier.value < 10 ? '0' : '';
+        lapCounter.text = '$prefix${lapNotifier.value}';
+      } else {
+        lapCounter.text = 'DONE';
+      }
     }
+
+    _timePassedComponent = TextComponent(
+      position: Vector2(0, 70),
+      anchor: Anchor.center,
+      textRenderer: defaultRenderer,
+    );
+    add(_timePassedComponent);
 
     lapNotifier.addListener(updateLapText);
     updateLapText();
+  }
+
+  @override
+  void update(double dt) {
+    if (gameRef.isGameOver) {
+      return;
+    }
+    _timePassedComponent.text = gameRef.timePassed;
   }
 
   final _backgroundRect = RRect.fromRectAndRadius(

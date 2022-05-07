@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
@@ -11,6 +12,7 @@ import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:flutter/services.dart';
 
+import 'background.dart';
 import 'ball.dart';
 import 'car.dart';
 import 'ground_sensor.dart';
@@ -40,28 +42,41 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
   static Vector2 trackSize = Vector2.all(500);
   static double playZoom = 8.0;
+  static const int numberOfLaps = 1;
   late final World cameraWorld;
-  late final CameraComponent startCamera;
-  late final List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
-  late final List<Set<LogicalKeyboardKey>> pressedKeySets;
+  late CameraComponent startCamera;
+  late List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
+  late List<Set<LogicalKeyboardKey>> pressedKeySets;
   late final TextComponent fpsText;
   final cars = <Car>[];
+  bool isGameOver = false;
+  Car? winner;
+  double _timePassed = 0;
 
   @override
   Future<void> onLoad() async {
+    children.register<CameraComponent>();
     fpsText =
         TextComponent(position: Vector2(20, canvasSize.y - 40), priority: 5);
     cameraWorld = World();
-    final ball = Ball();
     add(cameraWorld);
 
-    //cameraWorld.add(Background());
-    cameraWorld.add(GroundSensor(1, Vector2(25, 50), Vector2(50, 5), false));
-    cameraWorld.add(GroundSensor(2, Vector2(25, 70), Vector2(50, 5), false));
-    cameraWorld.add(GroundSensor(3, Vector2(52.5, 25), Vector2(5, 50), true));
-    cameraWorld.addAll(createWalls(trackSize));
-    cameraWorld.add(ball);
+    cameraWorld.addAll([
+      Background(),
+      GroundSensor(1, Vector2(25, 50), Vector2(50, 5), false),
+      GroundSensor(2, Vector2(25, 70), Vector2(50, 5), false),
+      GroundSensor(3, Vector2(52.5, 25), Vector2(5, 50), true),
+      Ball(),
+      ...createWalls(trackSize),
+    ]);
 
+    addContactCallback(CarContactCallback());
+    add(fpsText);
+    openMenu();
+  }
+
+  void openMenu() {
+    overlays.add('menu');
     startCamera = CameraComponent(
       world: cameraWorld,
     )
@@ -69,9 +84,6 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
       ..viewfinder.anchor = Anchor.center
       ..viewfinder.zoom = canvasSize.x / trackSize.x - 0.2;
     add(startCamera);
-
-    addContactCallback(CarContactCallback());
-    add(fpsText);
   }
 
   void prepareStart({required int numberOfPlayers}) {
@@ -133,12 +145,27 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
 
     for (var i = 0; i < numberOfPlayers; i++) {
       final car = Car(playerNumber: i, cameraComponent: cameras[i]);
-      cars.add(car);
-      cameraWorld.add(car);
       final lapText = LapText(
         lapNotifier: car.lapNotifier,
         position: -cameras[i].viewport.size / 2 + Vector2.all(100),
       );
+
+      car.lapNotifier.addListener(() {
+        if (car.lapNotifier.value > numberOfLaps) {
+          isGameOver = true;
+          winner = car;
+          overlays.add('gameover');
+          lapText.addAll([
+            ScaleEffect.by(
+              Vector2.all(1.5),
+              EffectController(duration: 0.2, alternate: true, repeatCount: 3),
+            ),
+            RotateEffect.by(pi * 2, EffectController(duration: 0.5)),
+          ]);
+        }
+      });
+      cars.add(car);
+      cameraWorld.add(car);
       cameras[i].viewport.addAll([lapText, mapCameras[i]]);
     }
 
@@ -149,6 +176,10 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   @override
   void update(double dt) {
     super.update(dt);
+    if (isGameOver) {
+      return;
+    }
+    _timePassed += dt;
     // TODO(Lukas): Remove
     fpsText.text = 'FPS: ${fps()}';
   }
@@ -159,13 +190,11 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
     Set<LogicalKeyboardKey> keysPressed,
   ) {
     super.onKeyEvent(event, keysPressed);
-    if (!isLoaded) {
+    if (!isLoaded || isGameOver) {
       return KeyEventResult.ignored;
     }
 
-    for (final pressedKeySet in pressedKeySets) {
-      pressedKeySet.clear();
-    }
+    _clearPressedKeys();
     for (final key in keysPressed) {
       activeKeyMaps.forEachIndexed((i, keyMap) {
         if (keyMap.containsKey(key)) {
@@ -174,5 +203,38 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
       });
     }
     return KeyEventResult.handled;
+  }
+
+  void _clearPressedKeys() {
+    for (final pressedKeySet in pressedKeySets) {
+      pressedKeySet.clear();
+    }
+  }
+
+  void reset() {
+    _clearPressedKeys();
+    activeKeyMaps.forEach((keyMap) => keyMap.clear());
+    isGameOver = false;
+    _timePassed = 0;
+    overlays.remove('gameover');
+    openMenu();
+    cars.forEach((car) => car.removeFromParent());
+    children.query<CameraComponent>().forEach(
+          (camera) => camera.removeFromParent(),
+        );
+  }
+
+  String _maybePrefixZero(int number) {
+    if (number < 10) {
+      return '0$number';
+    }
+    return number.toString();
+  }
+
+  String get timePassed {
+    final minutes = _maybePrefixZero((_timePassed / 60).floor());
+    final seconds = _maybePrefixZero((_timePassed % 60).floor());
+    final ms = _maybePrefixZero(((_timePassed % 1) * 100).floor());
+    return [minutes, seconds, ms].join(':');
   }
 }

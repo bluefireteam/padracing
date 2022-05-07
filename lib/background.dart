@@ -1,47 +1,26 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame/palette.dart';
 import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 
 class Background extends PositionComponent
     with HasGameRef<PadRacingGame>, HasPaint {
-  Background() : super(priority: 0);
+  Background() : super(size: PadRacingGame.trackSize, priority: 0);
 
-  final Random rng = Random();
-  late final Image _image;
+  late Rect _backgroundRect;
 
   @override
   Future<void> onLoad() async {
-    final trackSize = PadRacingGame.trackSize;
-    paint.color = Colors.green;
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder, trackSize.toRect());
-    final colors = [
-      Colors.green.withAlpha(100),
-      Colors.brown.withAlpha(100),
-      Colors.lightGreen.withAlpha(100),
-    ];
-
-    for (var x = 0.0; x < trackSize.x; x++) {
-      for (var y = 0.0; y < trackSize.y; y++) {
-        paint
-          ..color = (colors..shuffle(rng)).first
-          ..darken(rng.nextDouble());
-        canvas.drawCircle(Offset(x, y), 0.3, paint);
-      }
-    }
-    final picture = recorder.endRecording();
-    _image = await picture.toImage(trackSize.x.toInt(), trackSize.y.toInt());
+    paint = BasicPalette.black.paint();
+    _backgroundRect = toRect();
   }
-
-  final _whitePaint = Paint();
 
   @override
   void render(Canvas canvas) {
-    canvas.drawImage(_image, Offset.zero, _whitePaint);
+    canvas.drawRect(_backgroundRect, paint);
   }
 }

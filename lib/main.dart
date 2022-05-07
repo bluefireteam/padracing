@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Image, Gradient;
 import 'package:google_fonts/google_fonts.dart';
 
 import 'game.dart';
+import 'game_over.dart';
 import 'menu.dart';
 
 void main() {
@@ -15,6 +16,10 @@ void main() {
       button: GoogleFonts.vt323(
         fontSize: 30,
         fontWeight: FontWeight.w500,
+      ),
+      bodyText1: GoogleFonts.vt323(
+        fontSize: 28,
+        color: Colors.grey,
       ),
       bodyText2: GoogleFonts.vt323(
         fontSize: 18,
@@ -56,6 +61,7 @@ void main() {
         ),
         overlayBuilderMap: {
           'menu': (_, game) => Menu(game),
+          'gameover': (_, game) => GameOver(game),
         },
         initialActiveOverlays: const ['menu'],
       ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart' hide Image, Gradient;
 import 'game.dart';
 import 'game_colors.dart';
 
-class Menu extends StatelessWidget {
-  const Menu(this.game, {Key? key}) : super(key: key);
+class GameOver extends StatelessWidget {
+  const GameOver(this.game, {Key? key}) : super(key: key);
 
   final PadRacingGame game;
 
@@ -26,34 +26,18 @@ class Menu extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'PadRacing',
+                      'Player ${game.winner!.playerNumber + 1} wins!',
                       style: textTheme.headline1,
                     ),
+                    const SizedBox(height: 10),
                     Text(
-                      'First to 3 laps wins',
+                      'Time: ${game.timePassed}',
                       style: textTheme.bodyText1,
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      child: const Text('1 Player'),
-                      onPressed: () {
-                        game.prepareStart(numberOfPlayers: 1);
-                      },
-                    ),
-                    Text(
-                      'Arrow keys',
-                      style: textTheme.bodyText2,
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      child: const Text('2 Players'),
-                      onPressed: () {
-                        game.prepareStart(numberOfPlayers: 2);
-                      },
-                    ),
-                    Text(
-                      'ASDW',
-                      style: textTheme.bodyText2,
+                      child: const Text('Restart'),
+                      onPressed: game.reset,
                     ),
                   ],
                 ),

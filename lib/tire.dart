@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image, Gradient;
@@ -93,7 +92,9 @@ class Tire extends BodyComponent<PadRacingGame> {
     if (body.isAwake || pressedKeys.isNotEmpty) {
       _updateTurn(dt);
       _updateFriction();
-      _updateDrive();
+      if (!gameRef.isGameOver) {
+        _updateDrive();
+      }
     }
   }
 
