@@ -107,7 +107,22 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
   void start({required int numberOfPlayers}) {
     overlays.remove('menu');
     startCamera.removeFromParent();
-    final viewportSize = Vector2(canvasSize.x / numberOfPlayers, canvasSize.y);
+    final isHorizontal = canvasSize.x > canvasSize.y;
+    Vector2 alignedVector(
+        {double longMultiplier = 1,
+        double shortMultiplier = 1,
+        double longMultiplierExtra = 1}) {
+      return Vector2(
+        isHorizontal
+            ? canvasSize.x * longMultiplier * longMultiplierExtra
+            : canvasSize.x * shortMultiplier,
+        !isHorizontal
+            ? canvasSize.y * longMultiplier * longMultiplierExtra
+            : canvasSize.y * shortMultiplier,
+      );
+    }
+
+    final viewportSize = alignedVector(longMultiplier: 1 / numberOfPlayers);
 
     RectangleComponent viewportRimGenerator() =>
         RectangleComponent(size: viewportSize, anchor: Anchor.center)
@@ -118,10 +133,10 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
       return CameraComponent(
         world: cameraWorld,
         viewport: FixedSizeViewport(viewportSize.x, viewportSize.y)
-          ..position = Vector2(
-            (canvasSize.x / numberOfPlayers) * (i + 0.5),
-            canvasSize.y / 2,
-          )
+          ..position = alignedVector(
+              longMultiplier: 1 / numberOfPlayers,
+              shortMultiplier: 1 / 2,
+              longMultiplierExtra: i + 0.5)
           ..add(viewportRimGenerator()),
       )
         ..viewfinder.anchor = Anchor.center
@@ -136,7 +151,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents, FPSCounter {
         viewport: FixedSizeViewport(mapCameraSize.x, mapCameraSize.y)
           ..position = Vector2(
             viewportSize.x / 2 - mapCameraSize.x * mapCameraZoom - 30,
-            -(canvasSize.y / 2) + 30,
+            -(viewportSize.y / 2) + 30,
           ),
       )
         ..viewfinder.anchor = Anchor.center
