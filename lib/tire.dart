@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
 import 'package:flutter/material.dart' hide Image, Gradient;
@@ -12,20 +10,23 @@ import 'trail.dart';
 class Tire extends BodyComponent<PadRacingGame> {
   Tire(
     this.car,
-    this.color,
     this.pressedKeys,
-    this._maxDriveForce,
-    this._maxLateralImpulse,
-    this.jointDef,
-    this.jointAnchor, {
+    this.isFrontTire,
+    this.isLeftTire,
+    this.jointDef, {
     this.isTurnableTire = false,
   }) : super(
           paint: Paint()
-            ..color = color
+            ..color = car.paint.color
             ..strokeWidth = 0.2
             ..style = PaintingStyle.stroke,
           priority: 2,
         );
+
+  static const double _backTireMaxDriveForce = 300.0;
+  static const double _frontTireMaxDriveForce = 600.0;
+  static const double _backTireMaxLateralImpulse = 8.5;
+  static const double _frontTireMaxLateralImpulse = 7.5;
 
   final Car car;
   final size = Vector2(0.5, 1.25);
@@ -38,8 +39,12 @@ class Tire extends BodyComponent<PadRacingGame> {
   );
 
   final Set<LogicalKeyboardKey> pressedKeys;
-  final double _maxDriveForce;
-  final double _maxLateralImpulse;
+
+  late final double _maxDriveForce =
+      isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce;
+  late final double _maxLateralImpulse =
+      isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse;
+
   // Make mutable if ice or something should be implemented
   final double _currentTraction = 1.0;
 
@@ -48,20 +53,13 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   final RevoluteJointDef jointDef;
   late final RevoluteJoint joint;
-  final Vector2 jointAnchor;
   final bool isTurnableTire;
+  final bool isFrontTire;
+  final bool isLeftTire;
 
   final double _lockAngle = 0.6;
   final double _turnSpeedPerSecond = 4;
 
-  final random = Random();
-  final Tween<double> noise = Tween(begin: -1, end: 1);
-  late final List<Paint> particlePaints;
-  final Color color;
-  late final ColorTween colorTween = ColorTween(
-    begin: color,
-    end: Colors.black,
-  );
   final Paint _black = BasicPalette.black.paint();
 
   @override
@@ -72,7 +70,13 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   @override
   Body createBody() {
-    final def = BodyDef()..type = BodyType.dynamic;
+    final jointAnchor = isFrontTire
+        ? Vector2(isLeftTire ? -3.0 : 3.0, 3.5)
+        : Vector2(isLeftTire ? -3.0 : 3.0, -4.25);
+
+    final def = BodyDef()
+      ..type = BodyType.dynamic
+      ..position = car.body.position + jointAnchor;
     final body = world.createBody(def)..userData = this;
 
     final polygonShape = PolygonShape();

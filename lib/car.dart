@@ -24,10 +24,6 @@ class Car extends BodyComponent<PadRacingGame> {
   final int playerNumber;
   final Set<GroundLine> passedStartControl = {};
   final CameraComponent cameraComponent;
-  final double _backTireMaxDriveForce = 300.0;
-  final double _frontTireMaxDriveForce = 600.0;
-  final double _backTireMaxLateralImpulse = 8.5;
-  final double _frontTireMaxLateralImpulse = 7.5;
   late final Image _image;
   final size = const Size(6, 10);
   final scale = 10.0;
@@ -79,7 +75,7 @@ class Car extends BodyComponent<PadRacingGame> {
   @override
   Body createBody() {
     final startPosition =
-        Vector2.all(20) + Vector2.all(20) * playerNumber.toDouble();
+        Vector2(20, 30) + Vector2(15, 0) * playerNumber.toDouble();
     final def = BodyDef()
       ..type = BodyType.dynamic
       ..position = startPosition;
@@ -93,26 +89,22 @@ class Car extends BodyComponent<PadRacingGame> {
       ..restitution = 2.0;
     body.createFixture(fixtureDef);
 
-    final jointDef = RevoluteJointDef();
-    jointDef.bodyA = body;
-    jointDef.enableLimit = true;
-    jointDef.lowerAngle = 0.0;
-    jointDef.upperAngle = 0.0;
-    jointDef.localAnchorB.setZero();
+    final jointDef = RevoluteJointDef()
+      ..bodyA = body
+      ..enableLimit = true
+      ..lowerAngle = 0.0
+      ..upperAngle = 0.0
+      ..localAnchorB.setZero();
 
     tires = List.generate(4, (i) {
       final isFrontTire = i <= 1;
       final isLeftTire = i.isEven;
       return Tire(
         this,
-        colors[playerNumber],
         gameRef.pressedKeySets[playerNumber],
-        isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce,
-        isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse,
+        isFrontTire,
+        isLeftTire,
         jointDef,
-        isFrontTire
-            ? Vector2(isLeftTire ? -3.0 : 3.0, 3.5)
-            : Vector2(isLeftTire ? -3.0 : 3.0, -4.25),
         isTurnableTire: isFrontTire,
       );
     });
