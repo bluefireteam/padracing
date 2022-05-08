@@ -7,11 +7,14 @@ enum GameColors {
 }
 
 extension GameColorExtension on GameColors {
-  static final colors = <GameColors, Color>{
-    GameColors.green: ColorExtension.fromRGBHexString('#14F596'),
-    GameColors.blue: ColorExtension.fromRGBHexString('#81DDF9'),
-  };
+  Color get color {
+    switch (this) {
+      case GameColors.green:
+        return ColorExtension.fromRGBHexString('#14F596');
+      case GameColors.blue:
+        return ColorExtension.fromRGBHexString('#81DDF9');
+    }
+  }
 
-  Color get color => colors[this]!;
   Paint get paint => Paint()..color = color;
 }

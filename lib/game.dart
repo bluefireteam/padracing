@@ -41,7 +41,7 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
 
   static Vector2 trackSize = Vector2.all(500);
   static double playZoom = 8.0;
-  static const int numberOfLaps = 1;
+  static const int numberOfLaps = 3;
   late final World cameraWorld;
   late CameraComponent startCamera;
   late List<Map<LogicalKeyboardKey, LogicalKeyboardKey>> activeKeyMaps;
@@ -178,6 +178,13 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
             ),
             RotateEffect.by(pi * 2, EffectController(duration: 0.5)),
           ]);
+        } else {
+          lapText.add(
+            ScaleEffect.by(
+              Vector2.all(1.5),
+              EffectController(duration: 0.2, alternate: true),
+            ),
+          );
         }
       });
       cars.add(car);
