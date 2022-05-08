@@ -6,6 +6,9 @@ import 'game.dart';
 import 'game_over.dart';
 import 'menu.dart';
 
+// NOTE: Be patient, it might take a few seconds for it to load after you have
+// pressed the run button and it will just display a black screen meanwhile.
+
 void main() {
   final theme = ThemeData(
     textTheme: TextTheme(
