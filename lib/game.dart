@@ -72,12 +72,16 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
 
   void openMenu() {
     overlays.add('menu');
+    final zoomLevel = min(
+      canvasSize.x / trackSize.x,
+      canvasSize.y / trackSize.y,
+    );
     startCamera = CameraComponent(
       world: cameraWorld,
     )
       ..viewfinder.position = trackSize / 2
       ..viewfinder.anchor = Anchor.center
-      ..viewfinder.zoom = canvasSize.x / trackSize.x - 1.0;
+      ..viewfinder.zoom = zoomLevel - 0.2;
     add(startCamera);
   }
 
