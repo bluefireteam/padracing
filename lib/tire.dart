@@ -8,12 +8,12 @@ import 'game.dart';
 import 'trail.dart';
 
 class Tire extends BodyComponent<PadRacingGame> {
-  Tire(
-    this.car,
-    this.pressedKeys,
-    this.isFrontTire,
-    this.isLeftTire,
-    this.jointDef, {
+  Tire({
+    required this.car,
+    required this.pressedKeys,
+    required this.isFrontTire,
+    required this.isLeftTire,
+    required this.jointDef,
     this.isTurnableTire = false,
   }) : super(
           paint: Paint()
