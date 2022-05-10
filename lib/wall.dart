@@ -103,4 +103,10 @@ class Wall extends BodyComponent<PadRacingGame> {
     final fixtureDef = FixtureDef(shape)..restitution = 0.5;
     return body..createFixture(fixtureDef);
   }
+
+  late Rect asRect = Rect.fromCenter(
+    center: position.toOffset(),
+    width: size.x,
+    height: size.y,
+  );
 }

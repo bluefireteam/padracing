@@ -31,6 +31,11 @@ class Car extends BodyComponent<PadRacingGame> {
   late final _scaledRect = (size * scale).toRect();
   late final _renderRect = _renderPosition & size;
 
+  static const double boostDelta = 3;
+  double _boostTime = 0.0;
+  bool get isBoosted => _boostTime > 0.0;
+  final Paint _boostPaint = Paint()..color = Colors.amber;
+
   final vertices = <Vector2>[
     Vector2(1.5, -5.0),
     Vector2(3.0, -2.5),
@@ -116,10 +121,16 @@ class Car extends BodyComponent<PadRacingGame> {
   @override
   void update(double dt) {
     cameraComponent.viewfinder.position = body.position;
+    if (isBoosted) {
+      _boostTime -= dt;
+    }
   }
 
   @override
   void render(Canvas canvas) {
+    if (isBoosted) {
+      canvas.drawCircle(Offset.zero, 5, _boostPaint);
+    }
     canvas.drawImageRect(
       _image,
       _scaledRect,
@@ -133,5 +144,9 @@ class Car extends BodyComponent<PadRacingGame> {
     for (final tire in tires) {
       tire.removeFromParent();
     }
+  }
+
+  void boost() {
+    _boostTime += boostDelta;
   }
 }

@@ -86,7 +86,7 @@ class GroundLine extends BodyComponent {
   }
 }
 
-class CarContactCallback extends ContactCallback<Car, GroundLine> {
+class CarLapContactCallback extends ContactCallback<Car, GroundLine> {
   @override
   void begin(Car car, GroundLine groundSensor, Contact contact) {
     if (groundSensor.isFinish && car.passedStartControl.length == 2) {

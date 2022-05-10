@@ -57,16 +57,20 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     cameraWorld = World();
     add(cameraWorld);
 
+    final walls = createWalls(trackSize);
+    final bigBall = Ball(position: Vector2(200, 245), isSensor: false);
     cameraWorld.addAll([
       Background(),
       GroundLine(1, Vector2(25, 50), Vector2(50, 5), false),
       GroundLine(2, Vector2(25, 70), Vector2(50, 5), false),
       GroundLine(3, Vector2(52.5, 25), Vector2(5, 50), true),
-      Ball(),
-      ...createWalls(trackSize),
+      bigBall,
+      ...walls,
+      ...createBalls(trackSize, walls, bigBall),
     ]);
 
-    addContactCallback(CarContactCallback());
+    addContactCallback(CarLapContactCallback());
+    addContactCallback(CarBallContactCallback());
     openMenu();
   }
 
