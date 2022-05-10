@@ -4,11 +4,11 @@ import 'dart:ui';
 import 'package:flame/extensions.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Particle, World;
-import 'package:padracing/wall.dart';
 
 import 'car.dart';
 import 'game.dart';
 import 'game_colors.dart';
+import 'wall.dart';
 
 class Ball extends BodyComponent<PadRacingGame> {
   final double radius;
