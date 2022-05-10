@@ -23,7 +23,7 @@ class Ball extends BodyComponent<PadRacingGame> {
     this.radius = 80.0,
     this.rotation = 1.0,
     this.isSensor = true,
-  });
+  }) : super(priority: 3);
 
   @override
   Future<void> onLoad() async {
@@ -98,8 +98,8 @@ class CarBallContactCallback extends ContactCallback<Car, Ball> {
   void begin(Car car, Ball ball, Contact contact) {
     if (ball.isSensor) {
       ball.removeFromParent();
+      final body = car.body;
+      body.applyAngularImpulse(3 * body.mass * 100);
     }
-    final body = car.body;
-    body.applyAngularImpulse(3 * body.mass * 100);
   }
 }
