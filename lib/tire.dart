@@ -40,19 +40,15 @@ class Tire extends BodyComponent<PadRacingGame> {
 
   final Set<LogicalKeyboardKey> pressedKeys;
 
-  double get _maxDriveForce {
-    final normalMax =
-        isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce;
-    return car.isBoosted ? 2 * normalMax : normalMax;
-  }
-
+  late final double _maxDriveForce =
+      isFrontTire ? _frontTireMaxDriveForce : _backTireMaxDriveForce;
   late final double _maxLateralImpulse =
       isFrontTire ? _frontTireMaxLateralImpulse : _backTireMaxLateralImpulse;
 
   // Make mutable if ice or something should be implemented
   final double _currentTraction = 1.0;
 
-  double get _maxForwardSpeed => car.isBoosted ? 500.0 : 250.0;
+  final double _maxForwardSpeed = 250.0;
   final double _maxBackwardSpeed = -40.0;
 
   final RevoluteJointDef jointDef;
@@ -84,7 +80,7 @@ class Tire extends BodyComponent<PadRacingGame> {
     final body = world.createBody(def)..userData = this;
 
     final polygonShape = PolygonShape()..setAsBoxXY(0.5, 1.25);
-    body.createFixtureFromShape(polygonShape, 1.0)..userData = this;
+    body.createFixtureFromShape(polygonShape, 1.0).userData = this;
 
     jointDef.bodyB = body;
     jointDef.localAnchorA.setFrom(jointAnchor);
