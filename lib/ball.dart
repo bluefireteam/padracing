@@ -14,7 +14,7 @@ class Ball extends BodyComponent<PadRacingGame> {
   final double radius;
   final Vector2 position;
   final double rotation;
-  final bool isSensor;
+  final bool isMovable;
   final Random rng = Random();
   late final Paint _shaderPaint;
 
@@ -22,7 +22,7 @@ class Ball extends BodyComponent<PadRacingGame> {
     required this.position,
     this.radius = 80.0,
     this.rotation = 1.0,
-    this.isSensor = true,
+    this.isMovable = true,
   }) : super(priority: 3);
 
   @override
@@ -48,13 +48,13 @@ class Ball extends BodyComponent<PadRacingGame> {
   Body createBody() {
     final def = BodyDef()
       ..userData = this
-      ..type = BodyType.kinematic
+      ..type = isMovable ? BodyType.dynamic : BodyType.kinematic
       ..position = position;
     final body = world.createBody(def)..angularVelocity = rotation;
 
     final shape = CircleShape()..radius = radius;
     final fixtureDef = FixtureDef(shape)
-      ..isSensor = isSensor
+      //..isSensor = isSensor
       ..restitution = 0.5
       ..friction = 0.5;
     return body..createFixture(fixtureDef);
@@ -96,8 +96,7 @@ List<Ball> createBalls(Vector2 trackSize, List<Wall> walls, Ball bigBall) {
 class CarBallContactCallback extends ContactCallback<Car, Ball> {
   @override
   void begin(Car car, Ball ball, Contact contact) {
-    if (ball.isSensor) {
-      ball.removeFromParent();
+    if (ball.isMovable) {
       final body = car.body;
       body.applyAngularImpulse(3 * body.mass * 100);
     }
