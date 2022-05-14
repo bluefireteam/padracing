@@ -14,7 +14,7 @@ import 'background.dart';
 import 'ball.dart';
 import 'car.dart';
 import 'game_colors.dart';
-import 'ground_line.dart';
+import 'lap_line.dart';
 import 'lap_text.dart';
 import 'wall.dart';
 
@@ -61,9 +61,9 @@ class PadRacingGame extends Forge2DGame with KeyboardEvents {
     final bigBall = Ball(position: Vector2(200, 245), isMovable: false);
     cameraWorld.addAll([
       Background(),
-      GroundLine(1, Vector2(25, 50), Vector2(50, 5), false),
-      GroundLine(2, Vector2(25, 70), Vector2(50, 5), false),
-      GroundLine(3, Vector2(52.5, 25), Vector2(5, 50), true),
+      LapLine(1, Vector2(25, 50), Vector2(50, 5), false),
+      LapLine(2, Vector2(25, 70), Vector2(50, 5), false),
+      LapLine(3, Vector2(52.5, 25), Vector2(5, 50), true),
       bigBall,
       ...walls,
       ...createBalls(trackSize, walls, bigBall),

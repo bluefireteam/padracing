@@ -7,7 +7,7 @@ import 'package:flutter/material.dart' hide Image, Gradient;
 
 import 'game.dart';
 import 'game_colors.dart';
-import 'ground_line.dart';
+import 'lap_line.dart';
 import 'tire.dart';
 
 class Car extends BodyComponent<PadRacingGame> {
@@ -22,7 +22,7 @@ class Car extends BodyComponent<PadRacingGame> {
   late final List<Tire> tires;
   final ValueNotifier<int> lapNotifier = ValueNotifier<int>(1);
   final int playerNumber;
-  final Set<GroundLine> passedStartControl = {};
+  final Set<LapLine> passedStartControl = {};
   final CameraComponent cameraComponent;
   late final Image _image;
   final size = const Size(6, 10);

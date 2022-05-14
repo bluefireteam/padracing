@@ -9,8 +9,8 @@ import 'package:flutter/material.dart' hide Image, Gradient;
 import 'car.dart';
 import 'game_colors.dart';
 
-class GroundLine extends BodyComponent {
-  GroundLine(this.id, this.position, this.size, this.isFinish)
+class LapLine extends BodyComponent {
+  LapLine(this.id, this.position, this.size, this.isFinish)
       : super(priority: 1);
 
   final int id;
@@ -86,9 +86,9 @@ class GroundLine extends BodyComponent {
   }
 }
 
-class CarLapContactCallback extends ContactCallback<Car, GroundLine> {
+class CarLapContactCallback extends ContactCallback<Car, LapLine> {
   @override
-  void begin(Car car, GroundLine groundSensor, Contact contact) {
+  void begin(Car car, LapLine groundSensor, Contact contact) {
     if (groundSensor.isFinish && car.passedStartControl.length == 2) {
       car.lapNotifier.value++;
       car.passedStartControl.clear();

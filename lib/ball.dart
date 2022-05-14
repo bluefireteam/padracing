@@ -54,7 +54,6 @@ class Ball extends BodyComponent<PadRacingGame> {
 
     final shape = CircleShape()..radius = radius;
     final fixtureDef = FixtureDef(shape)
-      //..isSensor = isSensor
       ..restitution = 0.5
       ..friction = 0.5;
     return body..createFixture(fixtureDef);
