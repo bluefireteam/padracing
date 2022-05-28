@@ -1,3 +1,5 @@
+# This repository has moved to the official [Flame examples](https://github.com/flame-engine/flame/tree/main/examples/games/padracing)
+
 # Padracing
 
 Padracing is a small racing game to showcase the possibility of running
